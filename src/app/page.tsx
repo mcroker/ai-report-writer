@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, convertInchesToTwip, Indent } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, convertInchesToTwip } from 'docx';
 import { saveAs } from 'file-saver';
 
 
@@ -209,6 +209,19 @@ export default function ReportPage() {
         styles: {
           paragraphStyles: [
             {
+              id: "Normal",
+              name: "Normal",
+              next: "Normal",
+              quickFormat: true,
+              run: {
+                size: 24, 
+                font: "Times New Roman",
+              },
+              paragraph: {
+                spacing: { after: 120 }, 
+              },
+            },
+            {
               id: "Heading1",
               name: "Heading 1",
               basedOn: "Normal",
@@ -221,20 +234,6 @@ export default function ReportPage() {
               },
               paragraph: {
                 spacing: { after: 240, before: 240 }, 
-              },
-            },
-             {
-              id: "Normal",
-              name: "Normal",
-              // removed basedOn: "Normal"
-              next: "Normal",
-              quickFormat: true,
-              run: {
-                size: 24, 
-                font: "Times New Roman",
-              },
-              paragraph: {
-                spacing: { after: 120 }, 
               },
             }
           ],
