@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
-import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote, Loader2 } from 'lucide-react';
+import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote, Loader2, Target } from 'lucide-react';
 
 export interface ReportFormValuesPreview {
   studentName: string;
@@ -12,6 +12,7 @@ export interface ReportFormValuesPreview {
   grades: string;
   attendance: string;
   notes?: string;
+  earlyLearningGoals?: string;
 }
 
 interface ReportPreviewDisplayProps {
@@ -50,6 +51,12 @@ export function ReportPreviewDisplay({ reportContent, studentData, onExportDocx,
             <div>
               <strong className="font-medium text-foreground flex items-center mb-1"><StickyNote className="mr-2 h-4 w-4 text-primary" />Teacher Notes:</strong>
               <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.notes}</pre>
+            </div>
+          )}
+          {studentData.earlyLearningGoals && studentData.earlyLearningGoals.trim() !== '' && (
+            <div>
+              <strong className="font-medium text-foreground flex items-center mb-1"><Target className="mr-2 h-4 w-4 text-primary" />Early Learning Goals:</strong>
+              <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.earlyLearningGoals}</pre>
             </div>
           )}
         </div>

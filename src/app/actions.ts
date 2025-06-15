@@ -1,13 +1,23 @@
+
 'use server';
 import { generateReportContent, type GenerateReportContentInput, type GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
 
 export async function handleGenerateReportServerAction(
-  data: GenerateReportContentInput
+  data: GenerateReportContentInput 
 ): Promise<{ success: boolean; data?: GenerateReportContentOutput; error?: string }> {
   try {
     // Input data is already typed via GenerateReportContentInput.
     // The AI flow `generateReportContent` will handle its own Zod schema validation.
-    const result = await generateReportContent(data);
+    // The schema in the AI flow expects all fields, so ensure they are present, even if empty.
+    const completeData: GenerateReportContentInput = {
+      studentName: data.studentName,
+      className: data.className,
+      grades: data.grades,
+      attendance: data.attendance,
+      notes: data.notes || '',
+      earlyLearningGoals: data.earlyLearningGoals || '',
+    };
+    const result = await generateReportContent(completeData);
     return { success: true, data: result };
   } catch (error) {
     console.error("Error generating report content:", error);

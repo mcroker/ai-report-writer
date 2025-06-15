@@ -1,3 +1,4 @@
+
 // use server'
 'use server';
 /**
@@ -16,7 +17,8 @@ const GenerateReportContentInputSchema = z.object({
   className: z.string().describe('The class name or identifier.'),
   grades: z.string().describe('The grades of the student in various subjects.'),
   attendance: z.string().describe('The attendance record of the student.'),
-  notes: z.string().describe('Any additional notes or observations about the student.'),
+  notes: z.string().describe('Any additional notes or observations about the student. Can be empty.'),
+  earlyLearningGoals: z.string().describe('The early learning goals for the student. Can be empty.'),
 });
 export type GenerateReportContentInput = z.infer<typeof GenerateReportContentInputSchema>;
 
@@ -38,12 +40,14 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert teacher composing a student report.
 
   Based on the following student data, generate a summary of the student's performance, observations about the student's behavior and learning, and suggestions for the student's improvement.
+  Incorporate information from early learning goals into the relevant sections if provided.
 
   Student Name: {{{studentName}}}
   Class: {{{className}}}
   Grades: {{{grades}}}
   Attendance: {{{attendance}}}
   Notes: {{{notes}}}
+  Early Learning Goals: {{{earlyLearningGoals}}}
 
   Summary:
   Observations:

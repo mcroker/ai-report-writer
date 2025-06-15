@@ -5,9 +5,8 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, convertInchesToTwip } from 'docx';
 import { saveAs } from 'file-saver';
-
+import { generateDoc } from './generateDoc'
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +25,7 @@ const reportSchema = z.object({
   grades: z.string().min(1, "Grades are required").max(1000, "Grades input too long, max 1000 chars."),
   attendance: z.string().min(1, "Attendance is required").max(50, "Attendance input too long"),
   notes: z.string().max(1000, "Notes too long, max 1000 chars.").optional(),
+  earlyLearningGoals: z.string().max(1000, "Early learning goals too long, max 1000 chars.").optional(),
 });
 
 type ReportFormValues = z.infer<typeof reportSchema>;
@@ -45,6 +45,7 @@ export default function ReportPage() {
       grades: '',
       attendance: '',
       notes: '',
+      earlyLearningGoals: '',
     },
   });
 
@@ -59,6 +60,7 @@ export default function ReportPage() {
       grades: data.grades,
       attendance: data.attendance,
       notes: data.notes || '',
+      earlyLearningGoals: data.earlyLearningGoals || '',
     };
 
     const result = await handleGenerateReportServerAction(inputForAI);
@@ -83,161 +85,7 @@ export default function ReportPage() {
     }
     setIsLoadingDocx(true);
     try {
-      const doc = new Document({
-        creator: "ReportMaster",
-        title: `${currentStudentData.studentName}'s Report Card`,
-        description: `Report card for ${currentStudentData.studentName}`,
-        sections: [{
-          properties: {
-            page: {
-              margin: {
-                top: convertInchesToTwip(1).valueOf(),
-                right: convertInchesToTwip(1).valueOf(),
-                bottom: convertInchesToTwip(1).valueOf(),
-                left: convertInchesToTwip(1).valueOf(),
-              },
-            },
-          },
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: `${currentStudentData.studentName}'s Report Card`, bold: true, size: 36, font: "Times New Roman" })],
-              alignment: AlignmentType.CENTER,
-              spacing: { after: 400 },
-            }),
-
-            new Paragraph({
-              text: "Student Information",
-              heading: HeadingLevel.HEADING_1,
-              style: "Heading1",
-              spacing: { after: 200, before: 300 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Name: ", bold: true, font: "Times New Roman", size: 24 }),
-                new TextRun({ text: currentStudentData.studentName || "", font: "Times New Roman", size: 24 }),
-              ],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Class: ", bold: true, font: "Times New Roman", size: 24 }),
-                new TextRun({ text: currentStudentData.className || "", font: "Times New Roman", size: 24 }),
-              ],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Attendance: ", bold: true, font: "Times New Roman", size: 24 }),
-                new TextRun({ text: currentStudentData.attendance || "", font: "Times New Roman", size: 24 }),
-              ],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 200 },
-            }),
-
-            new Paragraph({
-              children: [new TextRun({ text: "Grades:", bold: true, font: "Times New Roman", size: 24 })],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 100 },
-            }),
-            ...(currentStudentData.grades || "").split('\n').map(line => new Paragraph({
-              children: [new TextRun({ text: line, font: "Times New Roman", size: 24 })],
-              indent: { left: convertInchesToTwip(0.75).valueOf() }, 
-              spacing: { after: 50 },
-            })),
-            
-            ...(currentStudentData.notes && currentStudentData.notes.trim() !== '' ? [
-              new Paragraph({
-                children: [new TextRun({ text: "Teacher Notes:", bold: true, font: "Times New Roman", size: 24 })],
-                indent: { left: convertInchesToTwip(0.5).valueOf() },
-                spacing: { after: 100, before: 150 },
-              }),
-              ...(currentStudentData.notes || "").split('\n').map(line => new Paragraph({
-                children: [new TextRun({ text: line, font: "Times New Roman", size: 24 })],
-                indent: { left: convertInchesToTwip(0.75).valueOf() },
-                spacing: { after: 50 },
-              }))
-            ] : []),
-            
-            new Paragraph({
-              text: "Summary of Performance",
-              heading: HeadingLevel.HEADING_1,
-              style: "Heading1",
-              spacing: { after: 200, before: 300 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: reportContent.summary || "", font: "Times New Roman", size: 24 })],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 200 },
-            }),
-
-            new Paragraph({
-              text: "Observations",
-              heading: HeadingLevel.HEADING_1,
-              style: "Heading1",
-              spacing: { after: 200, before: 300 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: reportContent.observations || "", font: "Times New Roman", size: 24 })],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 200 },
-            }),
-
-            new Paragraph({
-              text: "Suggestions for Improvement",
-              heading: HeadingLevel.HEADING_1,
-              style: "Heading1",
-              spacing: { after: 200, before: 300 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: reportContent.suggestions || "", font: "Times New Roman", size: 24 })],
-              indent: { left: convertInchesToTwip(0.5).valueOf() },
-              spacing: { after: 200 },
-            }),
-          ],
-          footers: {
-            default: new Paragraph({ 
-                children: [new TextRun({ text: "Generated by ReportMaster", size: 18, italic: true, font: "Times New Roman" })],
-                alignment: AlignmentType.CENTER,
-            }),
-          },
-        }],
-        styles: {
-          paragraphStyles: [
-            {
-              id: "Normal",
-              name: "Normal",
-              next: "Normal",
-              quickFormat: true,
-              run: {
-                size: 24, 
-                font: "Times New Roman",
-              },
-              paragraph: {
-                spacing: { after: 120 }, 
-              },
-            },
-            {
-              id: "Heading1",
-              name: "Heading 1",
-              basedOn: "Normal",
-              next: "Normal",
-              quickFormat: true,
-              run: {
-                size: 28, 
-                bold: true,
-                font: "Times New Roman",
-              },
-              paragraph: {
-                spacing: { after: 240, before: 240 }, 
-              },
-            }
-          ],
-        },
-      });
-
-      const blob = await Packer.toBlob(doc);
+      const blob = await generateDoc(reportContent, currentStudentData);
       saveAs(blob, `${currentStudentData.studentName.replace(/\s+/g, '_')}_ReportCard.docx`);
       toast({ title: "DOCX Exported Successfully!", description: `${currentStudentData.studentName}'s report card has been saved.` });
     } catch (e) {

@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { User, School, BookOpen, Thermometer, StickyNote } from 'lucide-react';
+import { User, School, BookOpen, Thermometer, StickyNote, Target } from 'lucide-react';
 
 export function StudentFormFields() {
   const { control } = useFormContext();
@@ -92,6 +93,23 @@ export function StudentFormFields() {
               <Textarea placeholder="Any other relevant observations or comments..." {...field} rows={3} aria-describedby="notes-description" />
             </FormControl>
             <FormDescription id="notes-description">Optional notes about the student.</FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="earlyLearningGoals"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center text-foreground">
+              <Target className="mr-2 h-4 w-4 text-primary" />
+              Early Learning Goals (Optional)
+            </FormLabel>
+            <FormControl>
+              <Textarea placeholder="Describe early learning goals or targets for the student..." {...field} rows={3} aria-describedby="earlyLearningGoals-description" />
+            </FormControl>
+            <FormDescription id="earlyLearningGoals-description">Optional early learning goals for the student.</FormDescription>
             <FormMessage />
           </FormItem>
         )}
