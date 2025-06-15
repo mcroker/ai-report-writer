@@ -28,29 +28,29 @@ const reportSchema = z.object({
   earlyLearningGoals: z.string().max(1000, "Early learning goals too long, max 1000 chars.").optional(),
   
   // Early Learning Skills - Communication and Language
-  listeningAttentionUnderstanding: z.boolean().optional().default(false),
-  speaking: z.boolean().optional().default(false),
-  comprehension: z.boolean().optional().default(false),
-  wordReading: z.boolean().optional().default(false),
-  writing: z.boolean().optional().default(false),
+  listeningAttentionUnderstanding: z.boolean().optional().default(true),
+  speaking: z.boolean().optional().default(true),
+  comprehension: z.boolean().optional().default(true),
+  wordReading: z.boolean().optional().default(true),
+  writing: z.boolean().optional().default(true),
 
   // Early Learning Skills - Physical Development
-  grossMotorSkills: z.boolean().optional().default(false),
-  fineMotorSkills: z.boolean().optional().default(false),
+  grossMotorSkills: z.boolean().optional().default(true),
+  fineMotorSkills: z.boolean().optional().default(true),
 
   // Early Learning Skills - Personal, Social and Emotional Development
-  selfRegulation: z.boolean().optional().default(false),
-  managingSelf: z.boolean().optional().default(false),
-  buildingRelationships: z.boolean().optional().default(false),
+  selfRegulation: z.boolean().optional().default(true),
+  managingSelf: z.boolean().optional().default(true),
+  buildingRelationships: z.boolean().optional().default(true),
 
   // Early Learning Skills - Understanding the World
-  pastAndPresent: z.boolean().optional().default(false),
-  peopleCultureCommunities: z.boolean().optional().default(false),
-  theNaturalWorld: z.boolean().optional().default(false),
+  pastAndPresent: z.boolean().optional().default(true),
+  peopleCultureCommunities: z.boolean().optional().default(true),
+  theNaturalWorld: z.boolean().optional().default(true),
 
   // Early Learning Skills - Expressive Arts and Design
-  creatingWithMaterials: z.boolean().optional().default(false),
-  beingImaginativeExpressive: z.boolean().optional().default(false),
+  creatingWithMaterials: z.boolean().optional().default(true),
+  beingImaginativeExpressive: z.boolean().optional().default(true),
 });
 
 export type ReportFormValues = z.infer<typeof reportSchema>;
@@ -71,21 +71,21 @@ export default function ReportPage() {
       attendance: '',
       notes: '',
       earlyLearningGoals: '',
-      listeningAttentionUnderstanding: false,
-      speaking: false,
-      comprehension: false,
-      wordReading: false,
-      writing: false,
-      grossMotorSkills: false,
-      fineMotorSkills: false,
-      selfRegulation: false,
-      managingSelf: false,
-      buildingRelationships: false,
-      pastAndPresent: false,
-      peopleCultureCommunities: false,
-      theNaturalWorld: false,
-      creatingWithMaterials: false,
-      beingImaginativeExpressive: false,
+      listeningAttentionUnderstanding: true,
+      speaking: true,
+      comprehension: true,
+      wordReading: true,
+      writing: true,
+      grossMotorSkills: true,
+      fineMotorSkills: true,
+      selfRegulation: true,
+      managingSelf: true,
+      buildingRelationships: true,
+      pastAndPresent: true,
+      peopleCultureCommunities: true,
+      theNaturalWorld: true,
+      creatingWithMaterials: true,
+      beingImaginativeExpressive: true,
     },
   });
 
@@ -212,3 +212,4 @@ export default function ReportPage() {
     </div>
   );
 }
+
