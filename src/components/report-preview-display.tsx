@@ -1,9 +1,10 @@
+
 "use client";
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
-import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote, Loader2, CheckCircle } from 'lucide-react';
+import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote, Loader2 } from 'lucide-react';
 
 export interface ReportFormValuesPreview {
   studentName: string;
@@ -16,11 +17,11 @@ export interface ReportFormValuesPreview {
 interface ReportPreviewDisplayProps {
   reportContent: GenerateReportContentOutput;
   studentData: ReportFormValuesPreview;
-  onExportPdf: () => void;
-  isLoadingPdf: boolean;
+  onExportDocx: () => void;
+  isLoadingDocx: boolean;
 }
 
-export function ReportPreviewDisplay({ reportContent, studentData, onExportPdf, isLoadingPdf }: ReportPreviewDisplayProps) {
+export function ReportPreviewDisplay({ reportContent, studentData, onExportDocx, isLoadingDocx }: ReportPreviewDisplayProps) {
   return (
     <Card className="w-full shadow-xl">
       <CardHeader className="border-b">
@@ -28,7 +29,7 @@ export function ReportPreviewDisplay({ reportContent, studentData, onExportPdf, 
           <FileText className="mr-3 h-7 w-7" />
           {studentData.studentName}'s Report Preview
         </CardTitle>
-        <CardDescription>Review the generated report content below. You can export it as a PDF.</CardDescription>
+        <CardDescription>Review the generated report content below. You can export it as a DOCX file.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8 p-6">
         
@@ -75,10 +76,10 @@ export function ReportPreviewDisplay({ reportContent, studentData, onExportPdf, 
         </div>
       </CardContent>
       <CardFooter className="border-t pt-6">
-        <Button onClick={onExportPdf} disabled={isLoadingPdf} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3 text-base">
-          {isLoadingPdf ? 
-            <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Exporting PDF...</> : 
-            <><Download className="mr-2 h-5 w-5" /> Export to PDF</>
+        <Button onClick={onExportDocx} disabled={isLoadingDocx} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3 text-base">
+          {isLoadingDocx ? 
+            <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Exporting DOCX...</> : 
+            <><Download className="mr-2 h-5 w-5" /> Export to DOCX</>
           }
         </Button>
       </CardFooter>

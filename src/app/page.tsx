@@ -1,10 +1,13 @@
+
 "use client";
 
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import jsPDF from 'jspdf';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, convertInchesToTwip, Indent } from 'docx';
+import { saveAs } from 'file-saver';
+
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +18,7 @@ import type { GenerateReportContentInput, GenerateReportContentOutput } from '@/
 import { StudentFormFields } from '@/components/student-form-fields';
 import { ReportPreviewDisplay, type ReportFormValuesPreview } from '@/components/report-preview-display';
 import { ReportPlaceholder } from '@/components/report-placeholder';
-import { Loader2, Sparkles, ClipboardList } from 'lucide-react';
+import { Loader2, Sparkles, ClipboardList, Download } from 'lucide-react';
 
 const reportSchema = z.object({
   studentName: z.string().min(1, "Student name is required").max(100, "Name too long"),
@@ -31,7 +34,7 @@ export default function ReportPage() {
   const [reportContent, setReportContent] = useState<GenerateReportContentOutput | null>(null);
   const [currentStudentData, setCurrentStudentData] = useState<ReportFormValuesPreview | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+  const [isLoadingDocx, setIsLoadingDocx] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<ReportFormValues>({
@@ -47,8 +50,8 @@ export default function ReportPage() {
 
   const onSubmit: SubmitHandler<ReportFormValues> = async (data) => {
     setIsLoading(true);
-    setReportContent(null); 
-    setCurrentStudentData(data as ReportFormValuesPreview); // Store form data for PDF
+    setReportContent(null);
+    setCurrentStudentData(data as ReportFormValuesPreview); 
 
     const inputForAI: GenerateReportContentInput = {
       studentName: data.studentName,
@@ -73,118 +76,182 @@ export default function ReportPage() {
     setIsLoading(false);
   };
 
-  const handleExportPdf = () => {
+  const handleExportDocx = async () => {
     if (!reportContent || !currentStudentData) {
       toast({ variant: "destructive", title: "Error", description: "No report data available to export." });
       return;
     }
-    setIsLoadingPdf(true);
+    setIsLoadingDocx(true);
     try {
-      const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 15;
-      let yPos = 20; // Initial Y position
-      const lineSpacing = 7; // Spacing between lines
-      const sectionTitleSpacing = lineSpacing * 1.5; // Spacing after a section title
-      const sectionSpacing = 10; // Spacing after a full section
-      
-      const fieldIndent = margin + 5; // Indent for field labels and content blocks
-      const valueIndent = fieldIndent + 30; // Indent for field values (Name: [Value])
-      const textBlockWidth = pageWidth - fieldIndent - margin; // Width for multiline text blocks
+      const doc = new Document({
+        creator: "ReportMaster",
+        title: `${currentStudentData.studentName}'s Report Card`,
+        description: `Report card for ${currentStudentData.studentName}`,
+        sections: [{
+          properties: {
+            page: {
+              margin: {
+                top: convertInchesToTwip(1).valueOf(),
+                right: convertInchesToTwip(1).valueOf(),
+                bottom: convertInchesToTwip(1).valueOf(),
+                left: convertInchesToTwip(1).valueOf(),
+              },
+            },
+          },
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: `${currentStudentData.studentName}'s Report Card`, bold: true, size: 36, font: "Times New Roman" })],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 400 },
+            }),
 
-      // Helper function to check for page overflow and add new page if needed
-      const checkAndAddPage = (neededHeight: number) => {
-        if (yPos + neededHeight > pageHeight - margin) { // Check if content fits, leaving bottom margin
-          doc.addPage();
-          yPos = margin; // Reset Y position for new page
-        }
-      };
-      
-      // Report Title
-      doc.setFont("times", "bold"); // Using standard PDF fonts
-      doc.setFontSize(22);
-      doc.text(`${currentStudentData.studentName}'s Report Card`, pageWidth / 2, yPos, { align: 'center' });
-      yPos += sectionSpacing * 1.5; // More space after main title
+            new Paragraph({
+              text: "Student Information",
+              heading: HeadingLevel.HEADING_1,
+              style: "Heading1",
+              spacing: { after: 200, before: 300 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Name: ", bold: true, font: "Times New Roman", size: 24 }),
+                new TextRun({ text: currentStudentData.studentName, font: "Times New Roman", size: 24 }),
+              ],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Class: ", bold: true, font: "Times New Roman", size: 24 }),
+                new TextRun({ text: currentStudentData.className, font: "Times New Roman", size: 24 }),
+              ],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Attendance: ", bold: true, font: "Times New Roman", size: 24 }),
+                new TextRun({ text: currentStudentData.attendance, font: "Times New Roman", size: 24 }),
+              ],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 200 },
+            }),
 
-      // Student Details Section
-      checkAndAddPage(sectionTitleSpacing + 4 * lineSpacing); // Estimate height
-      doc.setFont("times", "bold");
-      doc.setFontSize(16);
-      doc.text("Student Information", margin, yPos);
-      yPos += sectionTitleSpacing;
+            new Paragraph({
+              children: [new TextRun({ text: "Grades:", bold: true, font: "Times New Roman", size: 24 })],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 100 },
+            }),
+            ...currentStudentData.grades.split('\n').map(line => new Paragraph({
+              children: [new TextRun({ text: line, font: "Times New Roman", size: 24 })],
+              indent: { left: convertInchesToTwip(0.75).valueOf() }, // Slightly more indent for items
+              spacing: { after: 50 },
+            })),
+            
+            ...(currentStudentData.notes && currentStudentData.notes.trim() !== '' ? [
+              new Paragraph({
+                children: [new TextRun({ text: "Teacher Notes:", bold: true, font: "Times New Roman", size: 24 })],
+                indent: { left: convertInchesToTwip(0.5).valueOf() },
+                spacing: { after: 100, before: 150 },
+              }),
+              ...currentStudentData.notes.split('\n').map(line => new Paragraph({
+                children: [new TextRun({ text: line, font: "Times New Roman", size: 24 })],
+                indent: { left: convertInchesToTwip(0.75).valueOf() },
+                spacing: { after: 50 },
+              }))
+            ] : []),
+            
+            new Paragraph({
+              text: "Summary of Performance",
+              heading: HeadingLevel.HEADING_1,
+              style: "Heading1",
+              spacing: { after: 200, before: 300 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: reportContent.summary, font: "Times New Roman", size: 24 })],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 200 },
+            }),
 
-      const addDetailLine = (label: string, value: string) => {
-        checkAndAddPage(lineSpacing);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.text(label, fieldIndent, yPos);
-        doc.setFont("helvetica", "normal");
-        const valueLines = doc.splitTextToSize(value, pageWidth - valueIndent - margin); // Text width for value part
-        doc.text(valueLines, valueIndent, yPos);
-        yPos += (valueLines.length * lineSpacing) + (lineSpacing / 2); // Add a bit of padding after each line item
-      };
-      
-      addDetailLine("Name:", currentStudentData.studentName);
-      addDetailLine("Class:", currentStudentData.className);
-      addDetailLine("Attendance:", currentStudentData.attendance);
-      
-      // Grades (multiline)
-      checkAndAddPage(sectionTitleSpacing);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text("Grades:", fieldIndent, yPos);
-      yPos += lineSpacing;
-      doc.setFont("helvetica", "normal");
-      const gradesLines = doc.splitTextToSize(currentStudentData.grades, textBlockWidth);
-      checkAndAddPage(gradesLines.length * lineSpacing);
-      doc.text(gradesLines, fieldIndent, yPos);
-      yPos += gradesLines.length * lineSpacing + (lineSpacing / 2);
+            new Paragraph({
+              text: "Observations",
+              heading: HeadingLevel.HEADING_1,
+              style: "Heading1",
+              spacing: { after: 200, before: 300 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: reportContent.observations, font: "Times New Roman", size: 24 })],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 200 },
+            }),
 
-      // Teacher Notes (multiline, optional)
-      if (currentStudentData.notes && currentStudentData.notes.trim() !== '') {
-        checkAndAddPage(sectionTitleSpacing);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.text("Teacher Notes:", fieldIndent, yPos);
-        yPos += lineSpacing;
-        doc.setFont("helvetica", "normal");
-        const notesLines = doc.splitTextToSize(currentStudentData.notes, textBlockWidth);
-        checkAndAddPage(notesLines.length * lineSpacing);
-        doc.text(notesLines, fieldIndent, yPos);
-        yPos += notesLines.length * lineSpacing + (lineSpacing / 2);
-      }
-      yPos += sectionSpacing; // Space before next major section
+            new Paragraph({
+              text: "Suggestions for Improvement",
+              heading: HeadingLevel.HEADING_1,
+              style: "Heading1",
+              spacing: { after: 200, before: 300 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: reportContent.suggestions, font: "Times New Roman", size: 24 })],
+              indent: { left: convertInchesToTwip(0.5).valueOf() },
+              spacing: { after: 200 },
+            }),
+          ],
+          headers: {
+            default: undefined, // No header for now
+          },
+          footers: {
+            default: new Paragraph({ // Simple footer
+                children: [new TextRun({ text: "Generated by ReportMaster", size: 18, italic: true, font: "Times New Roman" })],
+                alignment: AlignmentType.CENTER,
+            }),
+          },
+        }],
+        styles: {
+          paragraphStyles: [
+            {
+              id: "Heading1",
+              name: "Heading 1",
+              basedOn: "Normal",
+              next: "Normal",
+              quickFormat: true,
+              run: {
+                size: 28, // 14pt
+                bold: true,
+                font: "Times New Roman",
+              },
+              paragraph: {
+                spacing: { after: 240, before: 240 }, // 12pt after
+              },
+            },
+             {
+              id: "Normal",
+              name: "Normal",
+              basedOn: "Normal",
+              next: "Normal",
+              quickFormat: true,
+              run: {
+                size: 24, // 12pt
+                font: "Times New Roman",
+              },
+              paragraph: {
+                spacing: { after: 120 }, // 6pt after
+              },
+            }
+          ],
+        },
+      });
 
-      // AI Generated Content Sections
-      const addAISection = (title: string, content: string) => {
-        checkAndAddPage(sectionTitleSpacing + lineSpacing * 2); // Estimate height
-        doc.setFont("times", "bold");
-        doc.setFontSize(16);
-        doc.text(title, margin, yPos);
-        yPos += sectionTitleSpacing;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        const contentLines = doc.splitTextToSize(content, pageWidth - fieldIndent - margin); // Use fieldIndent for content block alignment
-        checkAndAddPage(contentLines.length * lineSpacing);
-        doc.text(contentLines, fieldIndent, yPos);
-        yPos += contentLines.length * lineSpacing + sectionSpacing;
-      };
-
-      addAISection("Summary of Performance", reportContent.summary);
-      addAISection("Observations", reportContent.observations);
-      addAISection("Suggestions for Improvement", reportContent.suggestions);
-
-      doc.save(`${currentStudentData.studentName.replace(/\s+/g, '_')}_ReportCard.pdf`);
-      toast({ title: "PDF Exported Successfully!", description: `${currentStudentData.studentName}'s report card has been saved.` });
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `${currentStudentData.studentName.replace(/\s+/g, '_')}_ReportCard.docx`);
+      toast({ title: "DOCX Exported Successfully!", description: `${currentStudentData.studentName}'s report card has been saved.` });
     } catch (e) {
-      console.error("PDF Generation Error:", e);
-      toast({ variant: "destructive", title: "PDF Export Failed", description: "An error occurred while generating the PDF." });
+      console.error("DOCX Generation Error:", e);
+      toast({ variant: "destructive", title: "DOCX Export Failed", description: "An error occurred while generating the DOCX file." });
     } finally {
-      setIsLoadingPdf(false);
+      setIsLoadingDocx(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8">
@@ -233,8 +300,8 @@ export default function ReportPage() {
             <ReportPreviewDisplay
               reportContent={reportContent}
               studentData={currentStudentData}
-              onExportPdf={handleExportPdf}
-              isLoadingPdf={isLoadingPdf}
+              onExportDocx={handleExportDocx}
+              isLoadingDocx={isLoadingDocx}
             />
           )}
           
