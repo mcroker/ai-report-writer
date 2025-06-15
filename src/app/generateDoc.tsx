@@ -85,14 +85,15 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
 
             ...(currentStudentData.earlyLearningGoals && currentStudentData.earlyLearningGoals.trim() !== '' ? [
               new Paragraph({
-                children: [new TextRun({ text: "Early Learning Goals:", bold: true, font: "Times New Roman", size: 24 })],
-                indent: { left: convertInchesToTwip(0.5).valueOf() },
-                spacing: { after: 100, before: 150 },
+                text: "Early Learning Goals",
+                heading: HeadingLevel.HEADING_1,
+                style: "Heading1",
+                spacing: { after: 200, before: 300 },
               }),
               ...(currentStudentData.earlyLearningGoals || "").split('\n').map(line => new Paragraph({
                 children: [new TextRun({ text: line, font: "Times New Roman", size: 24 })],
-                indent: { left: convertInchesToTwip(0.75).valueOf() },
-                spacing: { after: 50 },
+                indent: { left: convertInchesToTwip(0.5).valueOf() },
+                spacing: { after: 100 },
               }))
             ] : []),
             
