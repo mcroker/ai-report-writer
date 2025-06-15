@@ -26,9 +26,34 @@ const reportSchema = z.object({
   attendance: z.string().min(1, "Attendance is required").max(50, "Attendance input too long"),
   notes: z.string().max(1000, "Notes too long, max 1000 chars.").optional(),
   earlyLearningGoals: z.string().max(1000, "Early learning goals too long, max 1000 chars.").optional(),
+  
+  // Early Learning Skills - Communication and Language
+  listeningAttentionUnderstanding: z.boolean().optional().default(false),
+  speaking: z.boolean().optional().default(false),
+  comprehension: z.boolean().optional().default(false),
+  wordReading: z.boolean().optional().default(false),
+  writing: z.boolean().optional().default(false),
+
+  // Early Learning Skills - Physical Development
+  grossMotorSkills: z.boolean().optional().default(false),
+  fineMotorSkills: z.boolean().optional().default(false),
+
+  // Early Learning Skills - Personal, Social and Emotional Development
+  selfRegulation: z.boolean().optional().default(false),
+  managingSelf: z.boolean().optional().default(false),
+  buildingRelationships: z.boolean().optional().default(false),
+
+  // Early Learning Skills - Understanding the World
+  pastAndPresent: z.boolean().optional().default(false),
+  peopleCultureCommunities: z.boolean().optional().default(false),
+  theNaturalWorld: z.boolean().optional().default(false),
+
+  // Early Learning Skills - Expressive Arts and Design
+  creatingWithMaterials: z.boolean().optional().default(false),
+  beingImaginativeExpressive: z.boolean().optional().default(false),
 });
 
-type ReportFormValues = z.infer<typeof reportSchema>;
+export type ReportFormValues = z.infer<typeof reportSchema>;
 
 export default function ReportPage() {
   const [reportContent, setReportContent] = useState<GenerateReportContentOutput | null>(null);
@@ -46,6 +71,21 @@ export default function ReportPage() {
       attendance: '',
       notes: '',
       earlyLearningGoals: '',
+      listeningAttentionUnderstanding: false,
+      speaking: false,
+      comprehension: false,
+      wordReading: false,
+      writing: false,
+      grossMotorSkills: false,
+      fineMotorSkills: false,
+      selfRegulation: false,
+      managingSelf: false,
+      buildingRelationships: false,
+      pastAndPresent: false,
+      peopleCultureCommunities: false,
+      theNaturalWorld: false,
+      creatingWithMaterials: false,
+      beingImaginativeExpressive: false,
     },
   });
 
@@ -61,6 +101,21 @@ export default function ReportPage() {
       attendance: data.attendance,
       notes: data.notes || '',
       earlyLearningGoals: data.earlyLearningGoals || '',
+      listeningAttentionUnderstanding: data.listeningAttentionUnderstanding,
+      speaking: data.speaking,
+      comprehension: data.comprehension,
+      wordReading: data.wordReading,
+      writing: data.writing,
+      grossMotorSkills: data.grossMotorSkills,
+      fineMotorSkills: data.fineMotorSkills,
+      selfRegulation: data.selfRegulation,
+      managingSelf: data.managingSelf,
+      buildingRelationships: data.buildingRelationships,
+      pastAndPresent: data.pastAndPresent,
+      peopleCultureCommunities: data.peopleCultureCommunities,
+      theNaturalWorld: data.theNaturalWorld,
+      creatingWithMaterials: data.creatingWithMaterials,
+      beingImaginativeExpressive: data.beingImaginativeExpressive,
     };
 
     const result = await handleGenerateReportServerAction(inputForAI);

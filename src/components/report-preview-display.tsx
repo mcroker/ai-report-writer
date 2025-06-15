@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
-import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote, Loader2, Target } from 'lucide-react';
+import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote, Loader2, Target, CheckSquare } from 'lucide-react';
 
 export interface ReportFormValuesPreview {
   studentName: string;
@@ -12,8 +12,45 @@ export interface ReportFormValuesPreview {
   grades: string;
   attendance: string;
   notes?: string;
-  earlyLearningGoals?: string;
+  earlyLearningGoals?: string; // Text input
+  // Early Learning Skills - Booleans
+  listeningAttentionUnderstanding?: boolean;
+  speaking?: boolean;
+  comprehension?: boolean;
+  wordReading?: boolean;
+  writing?: boolean;
+  grossMotorSkills?: boolean;
+  fineMotorSkills?: boolean;
+  selfRegulation?: boolean;
+  managingSelf?: boolean;
+  buildingRelationships?: boolean;
+  pastAndPresent?: boolean;
+  peopleCultureCommunities?: boolean;
+  theNaturalWorld?: boolean;
+  creatingWithMaterials?: boolean;
+  beingImaginativeExpressive?: boolean;
 }
+
+const skillLabelsMap: Record<keyof ReportFormValuesPreview, string> = {
+  listeningAttentionUnderstanding: "Listening, Attention and Understanding",
+  speaking: "Speaking",
+  comprehension: "Comprehension",
+  wordReading: "Word Reading",
+  writing: "Writing",
+  grossMotorSkills: "Gross Motor Skills",
+  fineMotorSkills: "Fine Motor Skills",
+  selfRegulation: "Self-regulation",
+  managingSelf: "Managing Self",
+  buildingRelationships: "Building Relationships",
+  pastAndPresent: "Past and Present",
+  peopleCultureCommunities: "People, Culture and Communities",
+  theNaturalWorld: "The Natural World",
+  creatingWithMaterials: "Creating with Materials",
+  beingImaginativeExpressive: "Being Imaginative and Expressive",
+  // Add other non-skill keys to satisfy TypeScript if needed, though they won't be used in skill iteration
+  studentName: "", className: "", grades: "", attendance: "", notes: "", earlyLearningGoals: ""
+};
+
 
 interface ReportPreviewDisplayProps {
   reportContent: GenerateReportContentOutput;
@@ -23,6 +60,18 @@ interface ReportPreviewDisplayProps {
 }
 
 export function ReportPreviewDisplay({ reportContent, studentData, onExportDocx, isLoadingDocx }: ReportPreviewDisplayProps) {
+  
+  const getActiveSkills = () => {
+    const skills: string[] = [];
+    (Object.keys(skillLabelsMap) as Array<keyof ReportFormValuesPreview>).forEach(key => {
+      if (studentData[key] === true && skillLabelsMap[key] !== "") { // Check if it's a skill and true
+        skills.push(skillLabelsMap[key]);
+      }
+    });
+    return skills;
+  };
+  const activeSkills = getActiveSkills();
+
   return (
     <Card className="w-full shadow-xl">
       <CardHeader className="border-b">
@@ -55,8 +104,16 @@ export function ReportPreviewDisplay({ reportContent, studentData, onExportDocx,
           )}
           {studentData.earlyLearningGoals && studentData.earlyLearningGoals.trim() !== '' && (
             <div>
-              <strong className="font-medium text-foreground flex items-center mb-1"><Target className="mr-2 h-4 w-4 text-primary" />Early Learning Goals:</strong>
+              <strong className="font-medium text-foreground flex items-center mb-1"><Target className="mr-2 h-4 w-4 text-primary" />Early Learning Goals (Text):</strong>
               <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.earlyLearningGoals}</pre>
+            </div>
+          )}
+          {activeSkills.length > 0 && (
+            <div>
+              <strong className="font-medium text-foreground flex items-center mb-1"><CheckSquare className="mr-2 h-4 w-4 text-primary" />Observed Early Learning Skills:</strong>
+              <ul className="list-disc list-inside pl-2 space-y-1 bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">
+                {activeSkills.map(skill => <li key={skill}>{skill}</li>)}
+              </ul>
             </div>
           )}
         </div>
