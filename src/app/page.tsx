@@ -6,7 +6,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { saveAs } from 'file-saver';
-import { generateDoc } from './generateDoc'
+import { generateDoc } from './doc/generateDoc'
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,18 +21,12 @@ import { Loader2, Sparkles, ClipboardList, Download } from 'lucide-react';
 
 const reportSchema = z.object({
   studentName: z.string().min(1, "Student name is required").max(100, "Name too long"),
-  className: z.string().min(1, "Class name is required").max(50, "Class name too long"),
-  grades: z.string().min(1, "Grades are required").max(1000, "Grades input too long, max 1000 chars."),
   attendance: z.string().min(1, "Attendance is required").max(50, "Attendance input too long"),
   notes: z.string().max(1000, "Notes too long, max 1000 chars.").optional(),
-  earlyLearningGoals: z.string().max(1000, "Early learning goals too long, max 1000 chars.").optional(),
-  
+
   // Early Learning Skills - Communication and Language
   listeningAttentionUnderstanding: z.boolean().optional().default(true),
   speaking: z.boolean().optional().default(true),
-  comprehension: z.boolean().optional().default(true),
-  wordReading: z.boolean().optional().default(true),
-  writing: z.boolean().optional().default(true),
 
   // Early Learning Skills - Physical Development
   grossMotorSkills: z.boolean().optional().default(true),
@@ -42,6 +36,15 @@ const reportSchema = z.object({
   selfRegulation: z.boolean().optional().default(true),
   managingSelf: z.boolean().optional().default(true),
   buildingRelationships: z.boolean().optional().default(true),
+
+  // Early Learning Skills - Literacy
+  comprehension: z.boolean().optional().default(true),
+  wordReading: z.boolean().optional().default(true),
+  writing: z.boolean().optional().default(true),
+
+  // Early Learning Skills - Mathematics
+  number: z.boolean().optional().default(true),
+  numericalPatterns: z.boolean().optional().default(true),
 
   // Early Learning Skills - Understanding the World
   pastAndPresent: z.boolean().optional().default(true),
@@ -66,21 +69,20 @@ export default function ReportPage() {
     resolver: zodResolver(reportSchema),
     defaultValues: {
       studentName: '',
-      className: '',
-      grades: '',
       attendance: '',
       notes: '',
-      earlyLearningGoals: '',
       listeningAttentionUnderstanding: true,
       speaking: true,
-      comprehension: true,
-      wordReading: true,
-      writing: true,
       grossMotorSkills: true,
       fineMotorSkills: true,
       selfRegulation: true,
       managingSelf: true,
       buildingRelationships: true,
+      comprehension: true,
+      wordReading: true,
+      writing: true,
+      number: true,
+      numericalPatterns: true,
       pastAndPresent: true,
       peopleCultureCommunities: true,
       theNaturalWorld: true,
@@ -92,15 +94,12 @@ export default function ReportPage() {
   const onSubmit: SubmitHandler<ReportFormValues> = async (data) => {
     setIsLoading(true);
     setReportContent(null);
-    setCurrentStudentData(data as ReportFormValuesPreview); 
+    setCurrentStudentData(data as ReportFormValuesPreview);
 
     const inputForAI: GenerateReportContentInput = {
       studentName: data.studentName,
-      className: data.className,
-      grades: data.grades,
       attendance: data.attendance,
       notes: data.notes || '',
-      earlyLearningGoals: data.earlyLearningGoals || '',
       listeningAttentionUnderstanding: data.listeningAttentionUnderstanding,
       speaking: data.speaking,
       comprehension: data.comprehension,
@@ -203,7 +202,7 @@ export default function ReportPage() {
               isLoadingDocx={isLoadingDocx}
             />
           )}
-          
+
           {!isLoading && !reportContent && (
             <ReportPlaceholder />
           )}

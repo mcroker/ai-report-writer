@@ -9,21 +9,21 @@ import { FileText, Eye, Lightbulb, Download, User, School, BookOpen, StickyNote,
 export interface ReportFormValuesPreview {
   studentName: string;
   className: string;
-  grades: string;
   attendance: string;
   notes?: string;
-  earlyLearningGoals?: string; // Text input
   // Early Learning Skills - Booleans
   listeningAttentionUnderstanding?: boolean;
   speaking?: boolean;
-  comprehension?: boolean;
-  wordReading?: boolean;
-  writing?: boolean;
   grossMotorSkills?: boolean;
   fineMotorSkills?: boolean;
   selfRegulation?: boolean;
   managingSelf?: boolean;
   buildingRelationships?: boolean;
+  comprehension?: boolean;
+  wordReading?: boolean;
+  writing?: boolean;
+  number?: boolean;
+  numericalPatterns?: boolean;
   pastAndPresent?: boolean;
   peopleCultureCommunities?: boolean;
   theNaturalWorld?: boolean;
@@ -34,21 +34,24 @@ export interface ReportFormValuesPreview {
 const skillLabelsMap: Record<keyof ReportFormValuesPreview, string> = {
   listeningAttentionUnderstanding: "Listening, Attention and Understanding",
   speaking: "Speaking",
-  comprehension: "Comprehension",
-  wordReading: "Word Reading",
-  writing: "Writing",
+
   grossMotorSkills: "Gross Motor Skills",
   fineMotorSkills: "Fine Motor Skills",
   selfRegulation: "Self-regulation",
   managingSelf: "Managing Self",
   buildingRelationships: "Building Relationships",
+  comprehension: "Comprehension",
+  wordReading: "Word Reading",
+  writing: "Writing",
+  number: "Number",
+  numericalPatterns: "Numerical Patterns",
   pastAndPresent: "Past and Present",
   peopleCultureCommunities: "People, Culture and Communities",
   theNaturalWorld: "The Natural World",
   creatingWithMaterials: "Creating with Materials",
   beingImaginativeExpressive: "Being Imaginative and Expressive",
   // Add other non-skill keys to satisfy TypeScript if needed, though they won't be used in skill iteration
-  studentName: "", className: "", grades: "", attendance: "", notes: "", earlyLearningGoals: ""
+  studentName: "", className: "", attendance: "", notes: ""
 };
 
 
@@ -89,12 +92,7 @@ export function ReportPreviewDisplay({ reportContent, studentData, onExportDocx,
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <p><strong className="font-medium text-foreground">Name:</strong> <span className="text-muted-foreground">{studentData.studentName}</span></p>
-            <p><strong className="font-medium text-foreground">Class:</strong> <span className="text-muted-foreground">{studentData.className}</span></p>
             <p><strong className="font-medium text-foreground">Attendance:</strong> <span className="text-muted-foreground">{studentData.attendance}</span></p>
-          </div>
-          <div>
-            <strong className="font-medium text-foreground flex items-center mb-1"><BookOpen className="mr-2 h-4 w-4 text-primary" />Grades:</strong>
-            <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.grades}</pre>
           </div>
           {studentData.notes && studentData.notes.trim() !== '' && (
             <div>
@@ -102,40 +100,26 @@ export function ReportPreviewDisplay({ reportContent, studentData, onExportDocx,
               <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.notes}</pre>
             </div>
           )}
-          {studentData.earlyLearningGoals && studentData.earlyLearningGoals.trim() !== '' && (
-            <div>
-              <strong className="font-medium text-foreground flex items-center mb-1"><Target className="mr-2 h-4 w-4 text-primary" />Early Learning Goals (Text):</strong>
-              <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.earlyLearningGoals}</pre>
-            </div>
-          )}
-          {activeSkills.length > 0 && (
-            <div>
-              <strong className="font-medium text-foreground flex items-center mb-1"><CheckSquare className="mr-2 h-4 w-4 text-primary" />Observed Early Learning Skills:</strong>
-              <ul className="list-disc list-inside pl-2 space-y-1 bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">
-                {activeSkills.map(skill => <li key={skill}>{skill}</li>)}
-              </ul>
-            </div>
-          )}
         </div>
 
         <div className="space-y-6">
           <div>
             <h4 className="font-headline text-lg flex items-center text-primary mb-1">
-              <FileText className="mr-2 h-5 w-5" />Summary
+              <FileText className="mr-2 h-5 w-5" />Playing And Exploring
             </h4>
-            <p className="text-muted-foreground ml-7 text-sm leading-relaxed">{reportContent.summary}</p>
+            <p className="text-muted-foreground ml-7 text-sm leading-relaxed">{reportContent.playingAndExploring}</p>
           </div>
           <div>
             <h4 className="font-headline text-lg flex items-center text-primary mb-1">
-              <Eye className="mr-2 h-5 w-5" />Observations
+              <Eye className="mr-2 h-5 w-5" />Active Learning
             </h4>
-            <p className="text-muted-foreground ml-7 text-sm leading-relaxed">{reportContent.observations}</p>
+            <p className="text-muted-foreground ml-7 text-sm leading-relaxed">{reportContent.activeLearning}</p>
           </div>
           <div>
             <h4 className="font-headline text-lg flex items-center text-primary mb-1">
-              <Lightbulb className="mr-2 h-5 w-5" />Suggestions
+              <Lightbulb className="mr-2 h-5 w-5" />Creating And Thinking Critically
             </h4>
-            <p className="text-muted-foreground ml-7 text-sm leading-relaxed">{reportContent.suggestions}</p>
+            <p className="text-muted-foreground ml-7 text-sm leading-relaxed">{reportContent.creatingAndThinkingCritically}</p>
           </div>
         </div>
       </CardContent>

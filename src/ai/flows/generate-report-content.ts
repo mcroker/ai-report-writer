@@ -15,14 +15,16 @@ import {z} from 'genkit';
 const skillLabels: Record<string, string> = {
   listeningAttentionUnderstanding: "Listening, Attention and Understanding",
   speaking: "Speaking",
-  comprehension: "Comprehension",
-  wordReading: "Word Reading",
-  writing: "Writing",
   grossMotorSkills: "Gross Motor Skills",
   fineMotorSkills: "Fine Motor Skills",
   selfRegulation: "Self-regulation",
   managingSelf: "Managing Self",
   buildingRelationships: "Building Relationships",
+  comprehension: "Comprehension",
+  wordReading: "Word Reading",
+  writing: "Writing",
+  number: "Number",
+  numericalPatterns: "Numerical Patterns",
   pastAndPresent: "Past and Present",
   peopleCultureCommunities: "People, Culture and Communities",
   theNaturalWorld: "The Natural World",
@@ -32,23 +34,22 @@ const skillLabels: Record<string, string> = {
 
 const GenerateReportContentInputSchema = z.object({
   studentName: z.string().describe('The name of the student.'),
-  className: z.string().describe('The class name or identifier.'),
-  grades: z.string().describe('The grades of the student in various subjects.'),
   attendance: z.string().describe('The attendance record of the student.'),
   notes: z.string().describe('Any additional notes or observations about the student. Can be empty.'),
-  earlyLearningGoals: z.string().describe('The early learning goals for the student (free text input). Can be empty.'),
-  
+   
   // Early Learning Skills - Booleans
   listeningAttentionUnderstanding: z.boolean().optional().describe('Skill: Listening, Attention and Understanding observed.'),
   speaking: z.boolean().optional().describe('Skill: Speaking observed.'),
-  comprehension: z.boolean().optional().describe('Skill: Comprehension observed.'),
-  wordReading: z.boolean().optional().describe('Skill: Word Reading observed.'),
-  writing: z.boolean().optional().describe('Skill: Writing observed.'),
   grossMotorSkills: z.boolean().optional().describe('Skill: Gross Motor Skills observed.'),
   fineMotorSkills: z.boolean().optional().describe('Skill: Fine Motor Skills observed.'),
   selfRegulation: z.boolean().optional().describe('Skill: Self-regulation observed.'),
   managingSelf: z.boolean().optional().describe('Skill: Managing Self observed.'),
   buildingRelationships: z.boolean().optional().describe('Skill: Building Relationships observed.'),
+  comprehension: z.boolean().optional().describe('Skill: Comprehension observed.'),
+  wordReading: z.boolean().optional().describe('Skill: Word Reading observed.'),
+  writing: z.boolean().optional().describe('Skill: Writing observed.'),
+  number: z.boolean().optional().describe('Skill: Number.'),
+  numericalPatterns: z.boolean().optional().describe('Skill: Numerical Patterns.'),
   pastAndPresent: z.boolean().optional().describe('Skill: Understanding Past and Present observed.'),
   peopleCultureCommunities: z.boolean().optional().describe('Skill: Understanding People, Culture and Communities observed.'),
   theNaturalWorld: z.boolean().optional().describe('Skill: Understanding The Natural World observed.'),
@@ -59,9 +60,18 @@ const GenerateReportContentInputSchema = z.object({
 export type GenerateReportContentInput = z.infer<typeof GenerateReportContentInputSchema>;
 
 const GenerateReportContentOutputSchema = z.object({
-  summary: z.string().describe('A summary of the student performance.'),
-  observations: z.string().describe('Observations about the student behavior and learning.'),
-  suggestions: z.string().describe('Suggestions for the student improvement.'),
+  playingAndExploring: z.string().describe('Finding out and exploring, Using what you know in your play, Being willing to have a go'),
+  activeLearning: z.string().describe('Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do.'),
+  creatingAndThinkingCritically: z.string().describe('Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways.'),
+  communcationAndLanguageNextSteps: z.string(),
+  physicalDevelopmentNextSteps: z.string(),
+  personalSocialEmotionalDevelopmentNextSteps: z.string(),
+  literacyNextSteps: z.string(),
+  mathmaticsNextSteps: z.string(),
+  understandingTheWorldNextSteps: z.string(),
+  expressiveArtsAndDesignNextSteps: z.string(),
+  religousEductionComments: z.string(),
+  generalComments: z.string(), 
 });
 export type GenerateReportContentOutput = z.infer<typeof GenerateReportContentOutputSchema>;
 
@@ -80,18 +90,30 @@ const prompt = ai.definePrompt({
 
   Student Name: {{{studentName}}}
   Class: {{{className}}}
-  Grades: {{{grades}}}
   Attendance: {{{attendance}}}
   Notes: {{{notes}}}
-  Early Learning Goals (text input): {{{earlyLearningGoals}}}
   Observed Early Learning Skills (from toggles): {{{observedSkillsString}}}
 
   Consider the observed skills when discussing strengths or areas for development.
 
-  Generate the report with the following sections:
-  Summary:
-  Observations:
-  Suggestions:`,
+  Include the following sections in the report. Write no more than 200 words in total:
+  Playing and Exploring - Finding out and exploring, Using what you know in your play, Being willing to have a go
+  Active Learning - Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do
+  Creating and Thinking Critially - Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways
+  
+  Include the following sections in the report, for each explain what the student needs to do to progress. Write a single sentence for each:
+  Communication and Language Next Steps
+  Physical Development Next Steps
+  Personal, Social and Emotional Development Next Steps
+  Literacy Next Steps
+  Mathematics Next Steps
+  Understanding the World Next Steps
+  Expressive Arts and Design Next Steps
+
+  Include the following sections in the report:
+  Religious Education Comments
+  General Comments
+  `
 });
 
 const generateReportContentFlow = ai.defineFlow(
@@ -101,6 +123,7 @@ const generateReportContentFlow = ai.defineFlow(
     outputSchema: GenerateReportContentOutputSchema,
   },
   async input => {
+
     const activeSkills: string[] = [];
     for (const key in skillLabels) {
       if (input[key as keyof GenerateReportContentInput]) {
@@ -111,6 +134,15 @@ const generateReportContentFlow = ai.defineFlow(
     
     const promptInput = { ...input, observedSkillsString };
     const {output} = await prompt(promptInput);
+
+    /* 
+    const output = {
+      playingAndExploring: 'Finding out and exploring, Using what you know in your play, Being willing to have a go',
+      activeLearning: 'Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do.',
+      creatingAndThinkingCritically: 'Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways.'
+    }
+    */
+
     return output!;
   }
 );

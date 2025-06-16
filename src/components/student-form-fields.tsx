@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, School, BookOpen, Thermometer, StickyNote, Target, Ear, MessageCircle, Brain, ScanText, PenLine, Bike, Hand, ShieldCheck, UserCheck, Users, Landmark, Globe, Leaf, Paintbrush, Sparkles, CheckSquare } from 'lucide-react';
+import { User, Calculator, Thermometer, StickyNote, Ear, MessageCircle, Brain, ScanText, PenLine, Bike, Hand, ShieldCheck, UserCheck, Users, Landmark, Globe, Leaf, Paintbrush, Sparkles, CheckSquare } from 'lucide-react';
 
 const earlyLearningSkillGroups = [
   {
@@ -16,9 +16,6 @@ const earlyLearningSkillGroups = [
     skills: [
       { name: "listeningAttentionUnderstanding", label: "Listening, Attention and Understanding", icon: <Ear className="mr-2 h-4 w-4 text-primary/80" /> },
       { name: "speaking", label: "Speaking", icon: <MessageCircle className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "comprehension", label: "Comprehension", icon: <Brain className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "wordReading", label: "Word Reading", icon: <ScanText className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "writing", label: "Writing", icon: <PenLine className="mr-2 h-4 w-4 text-primary/80" /> },
     ]
   },
   {
@@ -36,6 +33,23 @@ const earlyLearningSkillGroups = [
       { name: "selfRegulation", label: "Self-regulation", icon: <ShieldCheck className="mr-2 h-4 w-4 text-primary/80" /> },
       { name: "managingSelf", label: "Managing Self", icon: <UserCheck className="mr-2 h-4 w-4 text-primary/80" /> },
       { name: "buildingRelationships", label: "Building Relationships", icon: <Users className="mr-2 h-4 w-4 text-primary/80" /> },
+    ]
+  },
+  {
+    title: "Literacy",
+    icon: <MessageCircle className="mr-2 h-5 w-5 text-primary" />,
+    skills: [
+      { name: "comprehension", label: "Comprehension", icon: <Brain className="mr-2 h-4 w-4 text-primary/80" /> },
+      { name: "wordReading", label: "Word Reading", icon: <ScanText className="mr-2 h-4 w-4 text-primary/80" /> },
+      { name: "writing", label: "Writing", icon: <PenLine className="mr-2 h-4 w-4 text-primary/80" /> },
+    ]
+  },
+  {
+    title: "Mathematics",
+    icon: <Calculator className="mr-2 h-5 w-5 text-primary" />,
+    skills: [
+      { name: "number", label: "Number", icon: <Calculator className="mr-2 h-4 w-4 text-primary/80" /> },
+      { name: "numericalPatterns", label: "Numerical Patterns", icon: <Calculator className="mr-2 h-4 w-4 text-primary/80" /> }
     ]
   },
   {
@@ -82,40 +96,6 @@ export function StudentFormFields() {
       />
       <FormField
         control={control}
-        name="className"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex items-center text-foreground">
-              <School className="mr-2 h-4 w-4 text-primary" />
-              Class Name
-            </FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., Grade 5B" {...field} aria-describedby="className-description" />
-            </FormControl>
-            <FormDescription id="className-description">The student's class or section.</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="grades"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex items-center text-foreground">
-              <BookOpen className="mr-2 h-4 w-4 text-primary" />
-              Grades
-            </FormLabel>
-            <FormControl>
-              <Textarea placeholder="e.g., Math: A, Science: B+, History: A-" {...field} rows={3} aria-describedby="grades-description" />
-            </FormControl>
-            <FormDescription id="grades-description">Enter student's grades for various subjects.</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
         name="attendance"
         render={({ field }) => (
           <FormItem>
@@ -144,23 +124,6 @@ export function StudentFormFields() {
               <Textarea placeholder="Any other relevant observations or comments..." {...field} rows={3} aria-describedby="notes-description" />
             </FormControl>
             <FormDescription id="notes-description">Optional notes about the student.</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="earlyLearningGoals"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex items-center text-foreground">
-              <Target className="mr-2 h-4 w-4 text-primary" />
-              Early Learning Goals (Optional Text Input)
-            </FormLabel>
-            <FormControl>
-              <Textarea placeholder="Describe early learning goals or targets for the student..." {...field} rows={3} aria-describedby="earlyLearningGoals-description" />
-            </FormControl>
-            <FormDescription id="earlyLearningGoals-description">Optional broad early learning goals for the student.</FormDescription>
             <FormMessage />
           </FormItem>
         )}

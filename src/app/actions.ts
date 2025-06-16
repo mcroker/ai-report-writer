@@ -11,11 +11,8 @@ export async function handleGenerateReportServerAction(
     // The schema in the AI flow expects all fields, so ensure they are present, even if empty or false.
     const completeData: GenerateReportContentInput = {
       studentName: data.studentName,
-      className: data.className,
-      grades: data.grades,
       attendance: data.attendance,
       notes: data.notes || '',
-      earlyLearningGoals: data.earlyLearningGoals || '',
       listeningAttentionUnderstanding: data.listeningAttentionUnderstanding || false,
       speaking: data.speaking || false,
       comprehension: data.comprehension || false,
