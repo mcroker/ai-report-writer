@@ -52,7 +52,6 @@ const GenerateReportContentInputSchema = z.object({
   studentName: z.string().describe('The name of the student.'),
   attendance: z.string().describe('The attendance record of the student.'),
   notes: z.string().describe('Any additional notes or observations about the student. Can be empty.'),
-  earlyLearningGoals: z.string().describe('Input text for early learning goals. Can be empty.').optional(),
   religiousEducationProgress: z.enum(["Some", "Good", "Very Good"]).describe("The student's progress in Religious Education."),
   
   listeningAttentionUnderstanding: z.boolean().optional().describe('Skill: Listening, Attention and Understanding observed.'),
@@ -124,7 +123,6 @@ Student Name: {{{studentName}}}
 Attendance: {{{attendance}}}
 Notes: {{{notes}}}
 Observed Early Learning Skills (from toggles): {{{observedSkillsString}}}
-{{#if earlyLearningGoals}}Early Learning Goals Input: {{{earlyLearningGoals}}}{{/if}}
 Religious Education Progress: {{{religiousEducationProgress}}}
 
 {{#if fieldToRegenerate}}

@@ -60,36 +60,9 @@ export function StudentFormFields() {
               Additional Notes (Optional)
             </FormLabel>
             <FormControl>
-              <Textarea placeholder="Any other relevant observations or comments..." {...field} rows={3} aria-describedby="notes-description" />
+              <Textarea placeholder="Any other relevant observations or comments..." {...field} rows={10} aria-describedby="notes-description" />
             </FormControl>
             <FormDescription id="notes-description">Optional notes about the student.</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <Separator className="my-6" />
-
-      <FormField
-        control={control}
-        name="earlyLearningGoals"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="flex items-center text-foreground">
-              <BookOpen className="mr-2 h-4 w-4 text-primary" />
-              Early Learning Goals (Optional)
-            </FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="Describe any specific early learning goals or targets for the student..."
-                {...field}
-                rows={4}
-                aria-describedby="earlyLearningGoals-description"
-              />
-            </FormControl>
-            <FormDescription id="earlyLearningGoals-description">
-              Input for early learning goals. This information will be used by the AI.
-            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
