@@ -128,10 +128,10 @@ Religious Education Progress: {{{religiousEducationProgress}}}
 {{#if fieldToRegenerate}}
 You are focusing on regenerating ONLY the content for the "{{fieldToRegenerate}}" section of a student report.
 Use all the student data provided above to craft a new, high-quality response for just the "{{fieldToRegenerate}}" section.
-- If "{{fieldToRegenerate}}" is "Playing and Exploring", "Active Learning", or "Creating and Thinking Critically", write a descriptive paragraph (around 50-70 words).
+- If "{{fieldToRegenerate}}" is "Playing and Exploring", "Active Learning", or "Creating and Thinking Critically", write a descriptive paragraph (around 50-100 words).
 - If "{{fieldToRegenerate}}" is a "Next Steps" section (e.g., "Communication and Language Next Steps"), provide a single, concise sentence outlining what the student needs to do to progress.
 - If "{{fieldToRegenerate}}" is "Religious Education Comments", provide a suitable paragraph (1-2 sentences), considering the student's stated progress level ({{{religiousEducationProgress}}}).
-- If "{{fieldToRegenerate}}" is "General Comments", provide a suitable paragraph (1-2 sentences).
+- If "{{fieldToRegenerate}}" is "General Comments", provide a suitable paragraph (2-5 sentences).
 
 Your output MUST conform to the full report structure (i.e., include all fields like playingAndExploring, activeLearning, etc.).
 However, for any field *other than* "{{fieldToRegenerate}}", you should output the exact placeholder text "CONTENT_UNCHANGED". The system will handle merging your regenerated content for "{{fieldToRegenerate}}" with the existing report. The content for "{{fieldToRegenerate}}" must be newly generated and directly address that specific report section based on the student's data.
