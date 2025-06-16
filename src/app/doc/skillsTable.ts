@@ -4,85 +4,19 @@
 import { Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from 'docx';
 import { type ReportFormValuesPreview } from '@/components/report-preview-display'; // Using the extended interface
 import { type GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
-import { font } from './common';
+import { SkillsGroupResults, getSkillValues } from '../earlyLearningSkillGroups';
 
-interface SectionConfig {
-  title: string,
-  skills: { label: string, value?: boolean }[],
-  nextSteps: string
-}
+export function skillsTable(currentStudentData: ReportFormValuesPreview, reportContent: GenerateReportContentOutput): Table {
 
-export function skillsTable(reportContent: GenerateReportContentOutput, currentStudentData: ReportFormValuesPreview): Table {
-
-  const earlyLearningSkillGroups: SectionConfig[] = [
-    {
-      title: "Communication and Language",
-      skills: [
-        { label: "listening Attention and Understanding", value: currentStudentData.listeningAttentionUnderstanding },
-        { label: "Speaking", value: currentStudentData.speaking },
-      ],
-      nextSteps: reportContent.communcationAndLanguageNextSteps
-    },
-    {
-      title: "Physical Development",
-      skills: [
-        { label: "Gross Motor Skills", value: currentStudentData.grossMotorSkills },
-        { label: "Fine Motor Skills", value: currentStudentData.fineMotorSkills },
-      ],
-      nextSteps: reportContent.physicalDevelopmentNextSteps
-    },
-    {
-      title: "Personal, Social and Emotional Development",
-      skills: [
-        { label: "Self-regulation", value: currentStudentData.selfRegulation },
-        { label: "Managing Self", value: currentStudentData.managingSelf },
-        { label: "Building Relationships", value: currentStudentData.buildingRelationships },
-      ],
-      nextSteps: reportContent.personalSocialEmotionalDevelopmentNextSteps
-    },
-    {
-      title: "Literacy",
-      skills: [
-        { label: "Comprehension", value: currentStudentData.comprehension },
-        { label: "Word Reading", value: currentStudentData.wordReading },
-        { label: "Writing", value: currentStudentData.writing },
-      ],
-      nextSteps: reportContent.literacyNextSteps
-    },
-    {
-      title: "Mathematics",
-      skills: [
-        { label: "Number", value: currentStudentData.number },
-        { label: "Numerical Patterns", value: currentStudentData.numericalPatterns },
-      ],
-      nextSteps: reportContent.mathmaticsNextSteps
-    },
-    {
-      title: "Understanding the World",
-      skills: [
-        { label: "Past and Present", value: currentStudentData.pastAndPresent },
-        { label: "People, Culture and Communities", value: currentStudentData.peopleCultureCommunities },
-        { label: "The Natural World", value: currentStudentData.theNaturalWorld },
-      ],
-      nextSteps: reportContent.understandingTheWorldNextSteps
-    },
-    {
-      title: "Expressive Arts and Design",
-      skills: [
-        { label: "Creating with Materials", value: currentStudentData.creatingWithMaterials },
-        { label: "Being Imaginative and Expressive", value: currentStudentData.beingImaginativeExpressive },
-      ],
-      nextSteps: reportContent.expressiveArtsAndDesignNextSteps
-    }
-  ];
+  const skillsGroups: SkillsGroupResults[] = getSkillValues(currentStudentData, reportContent);
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: earlyLearningSkillGroups.flatMap(group => skillsSection(group))
+    rows: skillsGroups.flatMap(group => skillsSection(group))
   })
 }
 
-function skillsSection(section: SectionConfig): TableRow[] {
+function skillsSection(section: SkillsGroupResults): TableRow[] {
   return [
     new TableRow({
       children: [
@@ -117,7 +51,7 @@ function skillsSection(section: SectionConfig): TableRow[] {
             children: [
               new Paragraph({
                 children: [
-                  new TextRun({ text: s.label, bold: true, font, size: 24 })
+                  new TextRun({ text: s.label, style: 'Label' }),
                 ]
               })
             ]
@@ -143,8 +77,8 @@ function skillsSection(section: SectionConfig): TableRow[] {
           children: [
             new Paragraph({
               children: [
-                new TextRun({ text: 'Next Steps: ', bold: true, font, size: 24 }),
-                new TextRun({ text: section.nextSteps, font, size: 24 })
+                new TextRun({ text: 'Next Steps: ', style: 'Label' }),
+                new TextRun({ text: section.nextSteps  })
               ]
             })
           ]

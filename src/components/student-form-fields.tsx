@@ -7,70 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Calculator, Thermometer, StickyNote, Ear, MessageCircle, Brain, ScanText, PenLine, Bike, Hand, ShieldCheck, UserCheck, Users, Landmark, Globe, Leaf, Paintbrush, Sparkles, CheckSquare } from 'lucide-react';
-
-const earlyLearningSkillGroups = [
-  {
-    title: "Communication and Language",
-    icon: <MessageCircle className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "listeningAttentionUnderstanding", label: "Listening, Attention and Understanding", icon: <Ear className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "speaking", label: "Speaking", icon: <MessageCircle className="mr-2 h-4 w-4 text-primary/80" /> },
-    ]
-  },
-  {
-    title: "Physical Development",
-    icon: <Bike className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "grossMotorSkills", label: "Gross Motor Skills", icon: <Bike className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "fineMotorSkills", label: "Fine Motor Skills", icon: <Hand className="mr-2 h-4 w-4 text-primary/80" /> },
-    ]
-  },
-  {
-    title: "Personal, Social and Emotional Development",
-    icon: <Users className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "selfRegulation", label: "Self-regulation", icon: <ShieldCheck className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "managingSelf", label: "Managing Self", icon: <UserCheck className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "buildingRelationships", label: "Building Relationships", icon: <Users className="mr-2 h-4 w-4 text-primary/80" /> },
-    ]
-  },
-  {
-    title: "Literacy",
-    icon: <MessageCircle className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "comprehension", label: "Comprehension", icon: <Brain className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "wordReading", label: "Word Reading", icon: <ScanText className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "writing", label: "Writing", icon: <PenLine className="mr-2 h-4 w-4 text-primary/80" /> },
-    ]
-  },
-  {
-    title: "Mathematics",
-    icon: <Calculator className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "number", label: "Number", icon: <Calculator className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "numericalPatterns", label: "Numerical Patterns", icon: <Calculator className="mr-2 h-4 w-4 text-primary/80" /> }
-    ]
-  },
-  {
-    title: "Understanding the World",
-    icon: <Globe className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "pastAndPresent", label: "Past and Present", icon: <Landmark className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "peopleCultureCommunities", label: "People, Culture and Communities", icon: <Users className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "theNaturalWorld", label: "The Natural World", icon: <Leaf className="mr-2 h-4 w-4 text-primary/80" /> },
-    ]
-  },
-  {
-    title: "Expressive Arts and Design",
-    icon: <Sparkles className="mr-2 h-5 w-5 text-primary" />,
-    skills: [
-      { name: "creatingWithMaterials", label: "Creating with Materials", icon: <Paintbrush className="mr-2 h-4 w-4 text-primary/80" /> },
-      { name: "beingImaginativeExpressive", label: "Being Imaginative and Expressive", icon: <Sparkles className="mr-2 h-4 w-4 text-primary/80" /> },
-    ]
-  }
-];
-
+import { User, Thermometer, StickyNote, CheckSquare } from 'lucide-react';
+import { earlyLearningSkillGroups } from '@/app/earlyLearningSkillGroups';
 
 export function StudentFormFields() {
   const { control } = useFormContext();

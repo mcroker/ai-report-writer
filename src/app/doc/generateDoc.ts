@@ -55,11 +55,11 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
       children: [new PageBreak()]
     }),
 
-    skillsTable(reportContent, currentStudentData),
+    skillsTable(currentStudentData, reportContent),
 
-    new Paragraph({    }),
+    new Paragraph({}),
 
-    reTable(reportContent, currentStudentData),
+    reTable(currentStudentData, reportContent),
 
   ];
 
@@ -101,6 +101,15 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
           paragraph: {
             spacing: { after: 120 },
           },
+        },
+        {
+          id: "Label",
+          name: "Label",
+          next: "Normal",
+          quickFormat: true,
+          run: {
+            bold: true,
+          }
         },
         {
           id: "Heading1",

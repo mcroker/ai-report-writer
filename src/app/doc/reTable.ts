@@ -6,7 +6,7 @@ import { type ReportFormValuesPreview } from '@/components/report-preview-displa
 import { type GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
 import { font } from './common';
 
-export function reTable(reportContent: GenerateReportContentOutput, currentStudentData: ReportFormValuesPreview): Table {
+export function reTable(currentStudentData: ReportFormValuesPreview, reportContent: GenerateReportContentOutput): Table {
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },

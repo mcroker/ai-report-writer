@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+     {
+        "name": "Next.js: Development",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/next",
+        "runtimeArgs": ["dev"],
+        "port": 9229,
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "skipFiles": ["<node_internals>/**"]
+      }
+    ]
+}
