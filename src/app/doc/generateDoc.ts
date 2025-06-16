@@ -34,11 +34,11 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
     new Paragraph({
       children: [new TextRun({ text: `ANNUAL REPORT 2024-2025`, bold: true, size: 36, font })],
       alignment: AlignmentType.CENTER,
-      spacing: { before: 400, after: 400 },
+      spacing: { before: 1600, after: 400 },
     }),
 
     new Paragraph({
-      children: [new TextRun({ text: `${currentStudentData.studentName}`, bold: true, size: 36, font })],
+      children: [new TextRun({ text: currentStudentData.studentName, bold: true, size: 36, font })],
       alignment: AlignmentType.CENTER,
       spacing: { after: 400 },
     }),
@@ -46,7 +46,7 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
     new Paragraph({
       children: [new TextRun({ text: className, size: 24, font })],
       alignment: AlignmentType.CENTER,
-      spacing: { after: 800 },
+      spacing: { after: 1600 },
     }),
 
     attendanceTable(currentStudentData.attendance),
@@ -106,25 +106,11 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
           id: "Label",
           name: "Label",
           next: "Normal",
+          basedOn: "Normal",
           quickFormat: true,
           run: {
             bold: true,
           }
-        },
-        {
-          id: "Heading1",
-          name: "Heading 1",
-          basedOn: "Normal",
-          next: "Normal",
-          quickFormat: true,
-          run: {
-            size: 28,
-            bold: true,
-            font,
-          },
-          paragraph: {
-            spacing: { after: 240, before: 240 },
-          },
         }
       ],
     },

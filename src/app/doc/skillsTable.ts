@@ -5,6 +5,7 @@ import { Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from 'docx'
 import { type ReportFormValuesPreview } from '@/components/report-preview-display'; // Using the extended interface
 import { type GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
 import { SkillsGroupResults, getSkillValues } from '../earlyLearningSkillGroups';
+import { GREEN } from './common'
 
 export function skillsTable(currentStudentData: ReportFormValuesPreview, reportContent: GenerateReportContentOutput): Table {
 
@@ -58,12 +59,12 @@ function skillsSection(section: SkillsGroupResults): TableRow[] {
           }),
           new TableCell({
             width: { size: 15, type: WidthType.PERCENTAGE },
-            shading: s.value ? undefined : { fill: '#008000' },
+            shading: s.value ? undefined : { fill: GREEN },
             children: []
           }),
           new TableCell({
             width: { size: 15, type: WidthType.PERCENTAGE },
-            shading: s.value ? { fill: '#008000' } : undefined,
+            shading: s.value ? { fill: GREEN } : undefined,
             children: []
           })
         ]
