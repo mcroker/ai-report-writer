@@ -18,7 +18,10 @@ export function reTable(currentStudentData: ReportFormValuesPreview, reportConte
             columnSpan: 4,
             shading: { fill: 'ADD8E6' },
             children: [
-              new Paragraph('Religious Education')
+              new Paragraph({
+                text: `Religious Education`,
+                style :'TableGroupHeader'
+              })
             ]
           })
         ]
@@ -74,7 +77,10 @@ export function reTable(currentStudentData: ReportFormValuesPreview, reportConte
             columnSpan: 4,
             shading: { fill: 'ADD8E6' },
             children: [
-              new Paragraph('General Comments')
+              new Paragraph({
+                text: `General Comments`,
+                style :'TableGroupHeader'
+              })
             ]
           })
         ]

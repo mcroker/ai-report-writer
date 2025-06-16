@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Paragraph, Table, TableRow, TableCell, WidthType } from 'docx';
+import { Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from 'docx';
 import { type GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
 import { getEffectiveLearningValues } from '../effectiveLearning';
 
@@ -16,7 +16,10 @@ export function effectiveLearningTable(reportContent: GenerateReportContentOutpu
             shading: { fill: 'ADD8E6' },
             columnSpan: 2,
             children: [
-              new Paragraph('Characteristics of Effective Learning')
+              new Paragraph({
+                text: 'Characteristics of Effective Learning',
+                style: 'TableGroupHeader'
+              })
             ]
           }),
         ]
@@ -28,8 +31,12 @@ export function effectiveLearningTable(reportContent: GenerateReportContentOutpu
               width: { size: 33, type: WidthType.PERCENTAGE },
               children: [
                 new Paragraph({
-                  text: r.label,
-                  style: 'Label'
+                  children: [
+                    new TextRun({
+                      text: r.label,
+                      style: 'Label'
+                    })
+                  ]
                 }),
                 ...r.bullets.map(b => new Paragraph({
                   text: b,

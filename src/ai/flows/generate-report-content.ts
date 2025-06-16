@@ -32,12 +32,28 @@ const skillLabels: Record<string, string> = {
   beingImaginativeExpressive: "Being Imaginative and Expressive",
 };
 
+const outputFieldKeys = [
+  "playingAndExploring",
+  "activeLearning",
+  "creatingAndThinkingCritically",
+  "communcationAndLanguageNextSteps",
+  "physicalDevelopmentNextSteps",
+  "personalSocialEmotionalDevelopmentNextSteps",
+  "literacyNextSteps",
+  "mathematicsNextSteps",
+  "understandingTheWorldNextSteps",
+  "expressiveArtsAndDesignNextSteps",
+  "religousEductionComments",
+  "generalComments",
+] as const;
+
+
 const GenerateReportContentInputSchema = z.object({
   studentName: z.string().describe('The name of the student.'),
   attendance: z.string().describe('The attendance record of the student.'),
   notes: z.string().describe('Any additional notes or observations about the student. Can be empty.'),
-   
-  // Early Learning Skills - Booleans
+  earlyLearningGoals: z.string().describe('Input text for early learning goals. Can be empty.').optional(),
+  
   listeningAttentionUnderstanding: z.boolean().optional().describe('Skill: Listening, Attention and Understanding observed.'),
   speaking: z.boolean().optional().describe('Skill: Speaking observed.'),
   grossMotorSkills: z.boolean().optional().describe('Skill: Gross Motor Skills observed.'),
@@ -55,6 +71,23 @@ const GenerateReportContentInputSchema = z.object({
   theNaturalWorld: z.boolean().optional().describe('Skill: Understanding The Natural World observed.'),
   creatingWithMaterials: z.boolean().optional().describe('Skill: Creating with Materials observed.'),
   beingImaginativeExpressive: z.boolean().optional().describe('Skill: Being Imaginative and Expressive observed.'),
+
+  // Fields for regeneration
+  currentReportOutput: z.object({
+    playingAndExploring: z.string(),
+    activeLearning: z.string(),
+    creatingAndThinkingCritically: z.string(),
+    communcationAndLanguageNextSteps: z.string(),
+    physicalDevelopmentNextSteps: z.string(),
+    personalSocialEmotionalDevelopmentNextSteps: z.string(),
+    literacyNextSteps: z.string(),
+    mathematicsNextSteps: z.string(),
+    understandingTheWorldNextSteps: z.string(),
+    expressiveArtsAndDesignNextSteps: z.string(),
+    religousEductionComments: z.string(),
+    generalComments: z.string(),
+  }).optional().describe("The existing generated report content, if regenerating a specific field."),
+  fieldToRegenerate: z.enum(outputFieldKeys).optional().describe("The specific field to regenerate, if applicable."),
 });
 
 export type GenerateReportContentInput = z.infer<typeof GenerateReportContentInputSchema>;
@@ -75,45 +108,54 @@ const GenerateReportContentOutputSchema = z.object({
 });
 export type GenerateReportContentOutput = z.infer<typeof GenerateReportContentOutputSchema>;
 
+
 export async function generateReportContent(input: GenerateReportContentInput): Promise<GenerateReportContentOutput> {
   return generateReportContentFlow(input);
 }
 
 const prompt = ai.definePrompt({
   name: 'generateReportContentPrompt',
-  input: { schema: GenerateReportContentInputSchema.extend({ observedSkillsString: z.string() }) }, // Add observedSkillsString for the template
+  input: { schema: GenerateReportContentInputSchema.extend({ observedSkillsString: z.string() }) },
   output: { schema: GenerateReportContentOutputSchema },
   prompt: `You are an expert teacher composing a student report.
 
-  Based on the following student data, generate a summary of the student's performance, observations about the student's behavior and learning, and suggestions for the student's improvement.
-  Incorporate information from early learning goals (text input) and observed skills (toggled list) into the relevant sections if provided.
+Student Name: {{{studentName}}}
+Attendance: {{{attendance}}}
+Notes: {{{notes}}}
+Observed Early Learning Skills (from toggles): {{{observedSkillsString}}}
+{{#if earlyLearningGoals}}Early Learning Goals Input: {{{earlyLearningGoals}}}{{/if}}
 
-  Student Name: {{{studentName}}}
-  Class: {{{className}}}
-  Attendance: {{{attendance}}}
-  Notes: {{{notes}}}
-  Observed Early Learning Skills (from toggles): {{{observedSkillsString}}}
+{{#if fieldToRegenerate}}
+You are focusing on regenerating ONLY the content for the "{{fieldToRegenerate}}" section of a student report.
+Use all the student data provided above to craft a new, high-quality response for just the "{{fieldToRegenerate}}" section.
+- If "{{fieldToRegenerate}}" is "Playing and Exploring", "Active Learning", or "Creating and Thinking Critically", write a descriptive paragraph (around 50-70 words).
+- If "{{fieldToRegenerate}}" is a "Next Steps" section (e.g., "Communication and Language Next Steps"), provide a single, concise sentence outlining what the student needs to do to progress.
+- If "{{fieldToRegenerate}}" is "Religious Education Comments" or "General Comments", provide a suitable paragraph (1-2 sentences).
 
-  Consider the observed skills when discussing strengths or areas for development.
+Your output MUST conform to the full report structure (i.e., include all fields like playingAndExploring, activeLearning, etc.).
+However, for any field *other than* "{{fieldToRegenerate}}", you should output the exact placeholder text "CONTENT_UNCHANGED". The system will handle merging your regenerated content for "{{fieldToRegenerate}}" with the existing report. The content for "{{fieldToRegenerate}}" must be newly generated and directly address that specific report section based on the student's data.
+{{else}}
+Based on the student data, generate a comprehensive student report. Incorporate information from early learning goals input and observed skills into the relevant sections.
 
-  Include the following sections in the report. Write no more than 200 words in total:
-  Playing and Exploring - Finding out and exploring, Using what you know in your play, Being willing to have a go
-  Active Learning - Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do
-  Creating and Thinking Critially - Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways
-  
-  Include the following sections in the report, for each explain what the student needs to do to progress. Write a single sentence for each:
-  Communication and Language Next Steps
-  Physical Development Next Steps
-  Personal, Social and Emotional Development Next Steps
-  Literacy Next Steps
-  Mathematics Next Steps
-  Understanding the World Next Steps
-  Expressive Arts and Design Next Steps
+Include the following sections in the report. Write no more than 200 words in total for these three:
+Playing and Exploring - Finding out and exploring, Using what you know in your play, Being willing to have a go
+Active Learning - Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do
+Creating and Thinking Critically - Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways
 
-  Include the following sections in the report:
-  Religious Education Comments
-  General Comments
-  `
+Include the following sections in the report, for each explain what the student needs to do to progress. Write a single sentence for each:
+Communication and Language Next Steps
+Physical Development Next Steps
+Personal, Social and Emotional Development Next Steps
+Literacy Next Steps
+Mathematics Next Steps
+Understanding the World Next Steps
+Expressive Arts and Design Next Steps
+
+Include the following sections in the report:
+Religious Education Comments (1-2 sentences)
+General Comments (1-2 sentences related to the student's overall progress and year)
+{{/if}}
+`
 });
 
 const generateReportContentFlow = ai.defineFlow(
@@ -122,8 +164,7 @@ const generateReportContentFlow = ai.defineFlow(
     inputSchema: GenerateReportContentInputSchema,
     outputSchema: GenerateReportContentOutputSchema,
   },
-  async input => {
-
+  async (input: GenerateReportContentInput) => {
     const activeSkills: string[] = [];
     for (const key in skillLabels) {
       if (input[key as keyof GenerateReportContentInput]) {
@@ -133,16 +174,37 @@ const generateReportContentFlow = ai.defineFlow(
     const observedSkillsString = activeSkills.length > 0 ? activeSkills.join(', ') : 'No specific skills highlighted by toggles.';
     
     const promptInput = { ...input, observedSkillsString };
-    const {output} = await prompt(promptInput);
+    const llmResponse = await prompt(promptInput);
+    const generatedOutput = llmResponse.output;
 
-    /* 
-    const output = {
-      playingAndExploring: 'Finding out and exploring, Using what you know in your play, Being willing to have a go',
-      activeLearning: 'Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do.',
-      creatingAndThinkingCritically: 'Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways.'
+    if (!generatedOutput) {
+      throw new Error("AI failed to generate report content.");
     }
-    */
 
-    return output!;
+    if (input.fieldToRegenerate && input.currentReportOutput) {
+      const fieldKey = input.fieldToRegenerate as keyof GenerateReportContentOutput;
+      const regeneratedValue = generatedOutput[fieldKey];
+      
+      const updatedReport = { ...input.currentReportOutput };
+      // Only update if the regenerated value is not the placeholder
+      if (regeneratedValue && regeneratedValue !== "CONTENT_UNCHANGED") {
+        (updatedReport[fieldKey] as any) = regeneratedValue;
+      }
+      // For all other fields, if the LLM returned "CONTENT_UNCHANGED", keep the existing value from currentReportOutput
+      // This is implicitly handled by starting with `...input.currentReportOutput`
+      // and only updating the specific `fieldKey`.
+      // We might want to ensure other fields from `generatedOutput` (if not "CONTENT_UNCHANGED") don't accidentally overwrite.
+      // A safer merge:
+      const finalReport = { ...input.currentReportOutput };
+      if (generatedOutput[fieldKey] !== "CONTENT_UNCHANGED") {
+        finalReport[fieldKey] = generatedOutput[fieldKey];
+      }
+      return finalReport;
+
+    } else {
+      return generatedOutput;
+    }
   }
 );
+
+    

@@ -25,21 +25,30 @@ function skillsSection(section: SkillsGroupResults): TableRow[] {
           width: { size: 70, type: WidthType.PERCENTAGE },
           shading: { fill: 'ADD8E6' },
           children: [
-            new Paragraph(section.title)
+            new Paragraph({
+              text: section.title,
+              style: 'TableGroupHeader'
+            })
           ]
         }),
         new TableCell({
           width: { size: 15, type: WidthType.PERCENTAGE },
           shading: { fill: 'ADD8E6' },
           children: [
-            new Paragraph('Emerging')
+            new Paragraph({
+              text: 'Emerging',
+              style: 'TableGroupHeader'
+            })
           ]
         }),
         new TableCell({
           width: { size: 15, type: WidthType.PERCENTAGE },
           shading: { fill: 'ADD8E6' },
           children: [
-            new Paragraph('Expected')
+            new Paragraph({
+              text: 'Expected',
+              style: 'TableGroupHeader'
+            })
           ]
         }),
       ]
@@ -51,9 +60,8 @@ function skillsSection(section: SkillsGroupResults): TableRow[] {
             width: { size: 70, type: WidthType.PERCENTAGE },
             children: [
               new Paragraph({
-                children: [
-                  new TextRun({ text: s.label, style: 'Label' }),
-                ]
+                text: s.label,
+                style: 'TableSkillsLabel',
               })
             ]
           }),
@@ -79,7 +87,7 @@ function skillsSection(section: SkillsGroupResults): TableRow[] {
             new Paragraph({
               children: [
                 new TextRun({ text: 'Next Steps: ', style: 'Label' }),
-                new TextRun({ text: section.nextSteps  })
+                new TextRun({ text: section.nextSteps })
               ]
             })
           ]

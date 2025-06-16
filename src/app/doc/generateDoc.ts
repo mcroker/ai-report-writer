@@ -57,7 +57,8 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
 
     skillsTable(currentStudentData, reportContent),
 
-    new Paragraph({}),
+    new Paragraph({
+    }),
 
     reTable(currentStudentData, reportContent),
 
@@ -103,6 +104,34 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
           },
         },
         {
+          id: "TableGroupHeader",
+          name: "TableGroupHeader",
+          next: "Normal",
+          basedOn: "Normal",
+          quickFormat: true,
+          run: {
+            bold: true,
+          }
+        },
+        {
+          id: "VerticalAlignedTable",
+          name: "VerticalAlignedTable",
+          next: "Normal",
+          basedOn: "Normal",
+          paragraph: {
+            spacing: { after: 0 },
+          },
+        },
+        {
+          id: "TableSkillsLabel",
+          name: "TableSkillsLabel",
+          next: "Normal",
+          basedOn: "Normal",
+          quickFormat: true
+        }
+      ],
+      characterStyles: [
+        {
           id: "Label",
           name: "Label",
           next: "Normal",
@@ -112,7 +141,7 @@ export async function generateDoc(reportContent: GenerateReportContentOutput, cu
             bold: true,
           }
         }
-      ],
+      ]
     },
   });
   return Packer.toBlob(doc);
