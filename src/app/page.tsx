@@ -24,6 +24,7 @@ const reportSchema = z.object({
   attendance: z.string().min(1, "Attendance is required").max(50, "Attendance input too long"),
   notes: z.string().max(1000, "Notes too long, max 1000 chars.").optional(),
   earlyLearningGoals: z.string().max(2000, "Early learning goals too long, max 2000 chars.").optional(),
+  religiousEducationProgress: z.enum(["Some", "Good", "Very Good"]).default("Good"),
 
   listeningAttentionUnderstanding: z.boolean().optional().default(true),
   speaking: z.boolean().optional().default(true),
@@ -68,6 +69,7 @@ export default function ReportPage() {
       attendance: '',
       notes: '',
       earlyLearningGoals: '',
+      religiousEducationProgress: "Good",
       listeningAttentionUnderstanding: true,
       speaking: true,
       grossMotorSkills: true,
@@ -99,6 +101,7 @@ export default function ReportPage() {
       attendance: data.attendance,
       notes: data.notes || '',
       earlyLearningGoals: data.earlyLearningGoals || '',
+      religiousEducationProgress: data.religiousEducationProgress,
       listeningAttentionUnderstanding: data.listeningAttentionUnderstanding,
       speaking: data.speaking,
       grossMotorSkills: data.grossMotorSkills,
@@ -147,6 +150,7 @@ export default function ReportPage() {
         attendance: currentStudentDataForAI.attendance,
         notes: currentStudentDataForAI.notes || '',
         earlyLearningGoals: currentStudentDataForAI.earlyLearningGoals || '',
+        religiousEducationProgress: currentStudentDataForAI.religiousEducationProgress,
         listeningAttentionUnderstanding: currentStudentDataForAI.listeningAttentionUnderstanding,
         speaking: currentStudentDataForAI.speaking,
         grossMotorSkills: currentStudentDataForAI.grossMotorSkills,
@@ -189,21 +193,16 @@ export default function ReportPage() {
 
 
   const handleExportDocx = async () => {
-    if (!reportContent || !currentStudentDataForAI) { // Check currentStudentDataForAI
+    if (!reportContent || !currentStudentDataForAI) { 
       toast({ variant: "destructive", title: "Error", description: "No report data available to export." });
       return;
     }
     setIsLoadingDocx(true);
     try {
-      // For generateDoc, we need to map from StudentDataSourceForAI to ReportFormValuesPreview if they differ
-      // However, StudentDataSourceForAI (ReportFormValues) is a superset, so direct use is mostly fine.
-      // generateDoc expects studentName and attendance, which are present.
-      // It also uses boolean skills, which are also present.
-      // We need to ensure ReportFormValuesPreview includes everything generateDoc might read from currentStudentData.
-      // For now, casting should be okay as generateDoc primarily uses studentName and attendance from the root of studentData.
       const docDataForExport: ReportFormValuesPreview = {
         ...currentStudentDataForAI,
-        className: "St Francis", // Assuming this is static or to be configured elsewhere
+        className: "St Francis", 
+        religiousEducationProgress: currentStudentDataForAI.religiousEducationProgress || "Good", // Ensure it has a value for docx
       };
 
       const blob = await generateDoc(reportContent, docDataForExport);
@@ -264,7 +263,7 @@ export default function ReportPage() {
           {!isLoading && reportContent && currentStudentDataForAI && (
             <ReportPreviewDisplay
               reportContent={reportContent}
-              studentData={{...currentStudentDataForAI, className: "St Francis"}} // Cast/map to ReportFormValuesPreview
+              studentData={{...currentStudentDataForAI, className: "St Francis"}} 
               onExportDocx={handleExportDocx}
               isLoadingDocx={isLoadingDocx}
               onRegenerateField={handleRegenerateField}
@@ -280,5 +279,3 @@ export default function ReportPage() {
     </div>
   );
 }
-
-    

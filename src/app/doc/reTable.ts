@@ -2,11 +2,12 @@
 "use client";
 
 import { Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from 'docx';
-import { type ReportFormValuesPreview } from '@/components/report-preview-display'; // Using the extended interface
+import { type ReportFormValuesPreview } from '@/components/report-preview-display'; 
 import { type GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
-import { font } from './common';
+import { font, GREEN } from './common';
 
 export function reTable(currentStudentData: ReportFormValuesPreview, reportContent: GenerateReportContentOutput): Table {
+  const progressValue = currentStudentData.religiousEducationProgress;
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -36,18 +37,21 @@ export function reTable(currentStudentData: ReportFormValuesPreview, reportConte
           }),
           new TableCell({
             width: { size: 25, type: WidthType.PERCENTAGE },
+            shading: progressValue === 'Some' ? { fill: GREEN } : undefined,
             children: [
               new Paragraph('Some')
             ]
           }),
           new TableCell({
             width: { size: 25, type: WidthType.PERCENTAGE },
+            shading: progressValue === 'Good' ? { fill: GREEN } : undefined,
             children: [
               new Paragraph('Good')
             ]
           }),
           new TableCell({
             width: { size: 25, type: WidthType.PERCENTAGE },
+            shading: progressValue === 'Very Good' ? { fill: GREEN } : undefined,
             children: [
               new Paragraph('Very Good')
             ]

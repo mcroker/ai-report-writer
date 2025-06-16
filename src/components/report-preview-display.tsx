@@ -4,18 +4,20 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { GenerateReportContentOutput } from '@/ai/flows/generate-report-content';
-import { 
-    FileText, Eye, Lightbulb, Download, User, StickyNote, Loader2, RefreshCcw, Brain, Target, Edit3, Zap, 
-    MessageSquare, Users, ShieldCheck, Bike, Leaf, Paintbrush, Drama, BookOpen,
-    Calculator, Globe, Landmark // Added Calculator, Globe, Landmark
+import {
+  FileText, Eye, Lightbulb, Download, User, StickyNote, Loader2, RefreshCcw, Brain, Target, Edit3, Zap,
+  MessageSquare, Users, ShieldCheck, Bike, Leaf, Paintbrush, Drama, BookOpen,
+  Calculator, Globe, Landmark 
 } from 'lucide-react';
+import { ReactNode } from 'react';
 
 export interface ReportFormValuesPreview {
   studentName: string;
-  className: string; 
+  className: string;
   attendance: string;
   notes?: string;
   earlyLearningGoals?: string;
+  religiousEducationProgress: "Some" | "Good" | "Very Good"; // Added this line
 
   listeningAttentionUnderstanding?: boolean;
   speaking?: boolean;
@@ -54,7 +56,7 @@ const skillLabelsMap: Record<keyof ReportFormValuesPreview, string> = {
   theNaturalWorld: "The Natural World",
   creatingWithMaterials: "Creating with Materials",
   beingImaginativeExpressive: "Being Imaginative and Expressive",
-  studentName: "", className: "", attendance: "", notes: "", earlyLearningGoals: ""
+  studentName: "", className: "", attendance: "", notes: "", earlyLearningGoals: "", religiousEducationProgress: "Good"
 };
 
 export const reportFieldTitles: Record<keyof GenerateReportContentOutput, string> = {
@@ -72,7 +74,6 @@ export const reportFieldTitles: Record<keyof GenerateReportContentOutput, string
   generalComments: "General Comments",
 };
 
-// Define helper components BEFORE they are used in reportFieldIcons
 const PlaySquare = ({ className }: { className?: string }) => <Drama className={className} />;
 
 const reportFieldIcons: Record<keyof GenerateReportContentOutput, JSX.Element> = {
@@ -83,17 +84,17 @@ const reportFieldIcons: Record<keyof GenerateReportContentOutput, JSX.Element> =
   physicalDevelopmentNextSteps: <Bike className="mr-2 h-5 w-5" />,
   personalSocialEmotionalDevelopmentNextSteps: <Users className="mr-2 h-5 w-5" />,
   literacyNextSteps: <BookOpen className="mr-2 h-5 w-5" />,
-  mathematicsNextSteps: <Calculator className="mr-2 h-5 w-5" />, 
+  mathematicsNextSteps: <Calculator className="mr-2 h-5 w-5" />,
   understandingTheWorldNextSteps: <Globe className="mr-2 h-5 w-5" />,
   expressiveArtsAndDesignNextSteps: <Paintbrush className="mr-2 h-5 w-5" />,
-  religousEductionComments: <Landmark className="mr-2 h-5 w-5" />, 
+  religousEductionComments: <Landmark className="mr-2 h-5 w-5" />,
   generalComments: <FileText className="mr-2 h-5 w-5" />,
 };
 
 
 interface ReportPreviewDisplayProps {
   reportContent: GenerateReportContentOutput;
-  studentData: ReportFormValuesPreview; 
+  studentData: ReportFormValuesPreview;
   onExportDocx: () => void;
   isLoadingDocx: boolean;
   onRegenerateField: (fieldKey: keyof GenerateReportContentOutput) => void;
@@ -139,25 +140,36 @@ const RegenerableSection: React.FC<{
 };
 
 
-export function ReportPreviewDisplay({ 
-  reportContent, 
-  studentData, 
-  onExportDocx, 
+export function ReportPreviewDisplay({
+  reportContent,
+  studentData,
+  onExportDocx,
   isLoadingDocx,
   onRegenerateField,
-  regeneratingFieldKey 
+  regeneratingFieldKey
 }: ReportPreviewDisplayProps) {
-  
+
   const getActiveSkills = () => {
     const skills: string[] = [];
     (Object.keys(skillLabelsMap) as Array<keyof ReportFormValuesPreview>).forEach(key => {
-      if (studentData[key] === true && skillLabelsMap[key] !== "" && key !== 'studentName' && key !== 'className' && key !== 'attendance' && key !== 'notes' && key !== 'earlyLearningGoals') {
+      if (studentData[key] === true && skillLabelsMap[key] !== "" && key !== 'studentName' && key !== 'className' && key !== 'attendance' && key !== 'notes' && key !== 'earlyLearningGoals' && key !== 'religiousEducationProgress') {
         skills.push(skillLabelsMap[key]);
       }
     });
     return skills;
   };
-  const activeSkills = getActiveSkills();
+
+  const addField: (fieldKey: keyof GenerateReportContentOutput) => ReactNode
+    = (fieldKey: keyof GenerateReportContentOutput) => {
+      return <RegenerableSection
+        key={fieldKey}
+        fieldKey={fieldKey}
+        content={reportContent[fieldKey]}
+        onRegenerate={() => onRegenerateField(fieldKey)}
+        isRegenerating={regeneratingFieldKey === fieldKey}
+        icon={reportFieldIcons[fieldKey]}
+      />
+    }
 
   return (
     <Card className="w-full shadow-xl">
@@ -169,54 +181,51 @@ export function ReportPreviewDisplay({
         <CardDescription>Review the generated report content. Click the refresh icon next to a section to regenerate its content.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8 p-6 max-h-[calc(100vh-250px)] overflow-y-auto">
-        
+
         <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
           <h3 className="font-headline text-xl flex items-center text-primary border-b pb-2 mb-3">
-            <User className="mr-2 h-5 w-5" />Student Information
+            <User className="mr-2 h-5 w-5" />Effective Learning Goals
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <p><strong className="font-medium text-foreground">Name:</strong> <span className="text-muted-foreground">{studentData.studentName}</span></p>
-            <p><strong className="font-medium text-foreground">Attendance:</strong> <span className="text-muted-foreground">{studentData.attendance}</span></p>
+          <div className="space-y-6">
+            {([
+              "playingAndExploring",
+              "activeLearning",
+              "creatingAndThinkingCritically"
+            ] as Array<keyof GenerateReportContentOutput>).map(addField)}
           </div>
-          {studentData.notes && studentData.notes.trim() !== '' && (
-            <div>
-              <strong className="font-medium text-foreground flex items-center mb-1"><StickyNote className="mr-2 h-4 w-4 text-primary" />Teacher Notes:</strong>
-              <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.notes}</pre>
-            </div>
-          )}
-           {studentData.earlyLearningGoals && studentData.earlyLearningGoals.trim() !== '' && (
-            <div>
-              <strong className="font-medium text-foreground flex items-center mb-1"><Target className="mr-2 h-4 w-4 text-primary" />Early Learning Goals:</strong>
-              <pre className="whitespace-pre-wrap font-body bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">{studentData.earlyLearningGoals}</pre>
-            </div>
-          )}
-          {activeSkills.length > 0 && (
-            <div>
-              <strong className="font-medium text-foreground flex items-center mb-1"><Brain className="mr-2 h-4 w-4 text-primary" />Observed Skills:</strong>
-              <ul className="list-disc list-inside pl-2 space-y-1">
-                {activeSkills.map(skill => <li key={skill} className="text-sm text-muted-foreground">{skill}</li>)}
-              </ul>
-            </div>
-          )}
         </div>
 
-        <div className="space-y-6">
-          {(Object.keys(reportContent) as Array<keyof GenerateReportContentOutput>).map((fieldKey) => (
-            <RegenerableSection
-              key={fieldKey}
-              fieldKey={fieldKey}
-              content={reportContent[fieldKey]}
-              onRegenerate={() => onRegenerateField(fieldKey)}
-              isRegenerating={regeneratingFieldKey === fieldKey}
-              icon={reportFieldIcons[fieldKey]}
-            />
-          ))}
+        <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
+          <h3 className="font-headline text-xl flex items-center text-primary border-b pb-2 mb-3">
+            <User className="mr-2 h-5 w-5" />Next Steps
+          </h3>
+          <div className="space-y-6">
+            {([
+              "communcationAndLanguageNextSteps",
+              "physicalDevelopmentNextSteps",
+              "personalSocialEmotionalDevelopmentNextSteps",
+              "literacyNextSteps",
+              "mathematicsNextSteps",
+              "understandingTheWorldNextSteps",
+              "expressiveArtsAndDesignNextSteps"
+            ] as Array<keyof GenerateReportContentOutput>).map(addField)}
+          </div>
         </div>
+
+        <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
+          <h3 className="font-headline text-xl flex items-center text-primary border-b pb-2 mb-3">
+            <User className="mr-2 h-5 w-5" />Comments
+          </h3>
+          <div className="space-y-6">
+            {(["religousEductionComments", "generalComments"] as Array<keyof GenerateReportContentOutput>).map(addField)}
+          </div>
+        </div>
+
       </CardContent>
       <CardFooter className="border-t pt-6">
         <Button onClick={onExportDocx} disabled={isLoadingDocx} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-3 text-base">
-          {isLoadingDocx ? 
-            <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Exporting DOCX...</> : 
+          {isLoadingDocx ?
+            <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Exporting DOCX...</> :
             <><Download className="mr-2 h-5 w-5" /> Export to DOCX</>
           }
         </Button>
@@ -224,6 +233,3 @@ export function ReportPreviewDisplay({
     </Card>
   );
 }
-// Removed inline SVG helper icons as they are replaced by direct Lucide imports or defined earlier.
-
-    

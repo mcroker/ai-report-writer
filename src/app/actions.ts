@@ -4,7 +4,7 @@ import { generateReportContent, type GenerateReportContentInput, type GenerateRe
 
 // This function handles the initial full report generation
 export async function handleGenerateReportServerAction(
-  data: Omit<GenerateReportContentInput, 'currentReportOutput' | 'fieldToRegenerate'> // Original input fields from form
+  data: Omit<GenerateReportContentInput, 'currentReportOutput' | 'fieldToRegenerate'> 
 ): Promise<{ success: boolean; data?: GenerateReportContentOutput; error?: string }> {
   try {
     // Construct the full input for the AI flow, ensuring all optional fields are present
@@ -13,6 +13,7 @@ export async function handleGenerateReportServerAction(
       attendance: data.attendance,
       notes: data.notes || '',
       earlyLearningGoals: data.earlyLearningGoals || '',
+      religiousEducationProgress: data.religiousEducationProgress || "Good", // Ensure default if not provided
       listeningAttentionUnderstanding: data.listeningAttentionUnderstanding || false,
       speaking: data.speaking || false,
       grossMotorSkills: data.grossMotorSkills || false,
@@ -30,7 +31,6 @@ export async function handleGenerateReportServerAction(
       theNaturalWorld: data.theNaturalWorld || false,
       creatingWithMaterials: data.creatingWithMaterials || false,
       beingImaginativeExpressive: data.beingImaginativeExpressive || false,
-      // currentReportOutput and fieldToRegenerate will be undefined, signifying a full generation
     };
     const result = await generateReportContent(completeData);
     return { success: true, data: result };
@@ -53,11 +53,11 @@ export async function handleRegenerateFieldServerAction(
 ): Promise<{ success: boolean; data?: GenerateReportContentOutput; error?: string }> {
   try {
     const inputForAI: GenerateReportContentInput = {
-      // Spread all student form fields from payload.studentInput
       studentName: payload.studentInput.studentName,
       attendance: payload.studentInput.attendance,
       notes: payload.studentInput.notes || '',
       earlyLearningGoals: payload.studentInput.earlyLearningGoals || '',
+      religiousEducationProgress: payload.studentInput.religiousEducationProgress || "Good",
       listeningAttentionUnderstanding: payload.studentInput.listeningAttentionUnderstanding || false,
       speaking: payload.studentInput.speaking || false,
       grossMotorSkills: payload.studentInput.grossMotorSkills || false,
@@ -75,7 +75,6 @@ export async function handleRegenerateFieldServerAction(
       theNaturalWorld: payload.studentInput.theNaturalWorld || false,
       creatingWithMaterials: payload.studentInput.creatingWithMaterials || false,
       beingImaginativeExpressive: payload.studentInput.beingImaginativeExpressive || false,
-      // Add regeneration specific fields
       currentReportOutput: payload.currentReportOutput,
       fieldToRegenerate: payload.fieldToRegenerate,
     };
@@ -86,5 +85,3 @@ export async function handleRegenerateFieldServerAction(
     return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred while regenerating the field." };
   }
 }
-
-    

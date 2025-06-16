@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { User, Thermometer, StickyNote, CheckSquare } from 'lucide-react';
+import { User, Thermometer, StickyNote, CheckSquare, BookOpen, Landmark } from 'lucide-react';
 import { earlyLearningSkillGroups } from '@/app/earlyLearningSkillGroups';
 
 export function StudentFormFields() {
@@ -62,6 +63,79 @@ export function StudentFormFields() {
               <Textarea placeholder="Any other relevant observations or comments..." {...field} rows={3} aria-describedby="notes-description" />
             </FormControl>
             <FormDescription id="notes-description">Optional notes about the student.</FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <Separator className="my-6" />
+
+      <FormField
+        control={control}
+        name="earlyLearningGoals"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center text-foreground">
+              <BookOpen className="mr-2 h-4 w-4 text-primary" />
+              Early Learning Goals (Optional)
+            </FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder="Describe any specific early learning goals or targets for the student..."
+                {...field}
+                rows={4}
+                aria-describedby="earlyLearningGoals-description"
+              />
+            </FormControl>
+            <FormDescription id="earlyLearningGoals-description">
+              Input for early learning goals. This information will be used by the AI.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <Separator className="my-6" />
+
+       <FormField
+        control={control}
+        name="religiousEducationProgress"
+        render={({ field }) => (
+          <FormItem className="space-y-3">
+            <FormLabel className="flex items-center text-foreground">
+              <Landmark className="mr-2 h-4 w-4 text-primary" />
+              Religious Education Progress
+            </FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4"
+                aria-describedby="religiousEducationProgress-description"
+              >
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="Some" />
+                  </FormControl>
+                  <FormLabel className="font-normal">Some</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="Good" />
+                  </FormControl>
+                  <FormLabel className="font-normal">Good</FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="Very Good" />
+                  </FormControl>
+                  <FormLabel className="font-normal">Very Good</FormLabel>
+                </FormItem>
+              </RadioGroup>
+            </FormControl>
+            <FormDescription id="religiousEducationProgress-description">
+              Select the student's progress in Religious Education.
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
