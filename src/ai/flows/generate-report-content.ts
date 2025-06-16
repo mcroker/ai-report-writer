@@ -141,7 +141,7 @@ Based on the student data, generate a comprehensive student report. Incorporate 
 Write in a professional style, but use simple language and words.
 Avoid duplication of themes or examples between sections.
 
-Include the following sections in the report. Write no more than 200 words in total for these three:
+Include the following sections in the report. Write no more than 250 words in total for these three:
 Playing and Exploring - Finding out and exploring, Using what you know in your play, Being willing to have a go
 Active Learning - Being involved and concentrating, Keeping on trying, Enjoying achieving what you set out to do
 Creating and Thinking Critically - Having your own ideas, Using what you already know to learn new things, Choosing ways to do things and finding new ways; congnitive thinging (e.g. mathematics)
@@ -157,7 +157,7 @@ Expressive Arts and Design Next Steps
 
 Include the following sections in the report:
 Religious Education Comments (1-2 sentences, informed by their progress: {{{religiousEducationProgress}}})
-General Comments (1-2 sentences related to the student's overall progress and year)
+General Comments (2-5 sentences related to the student's overall progress and year)
 {{/if}}
 `
 });
